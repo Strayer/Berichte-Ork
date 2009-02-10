@@ -1,6 +1,4 @@
 #include <QApplication>
-#include <QDialog>
-#include <QMessageBox>
 #include <QtSql>
 
 #include "BerichteOrk.h"

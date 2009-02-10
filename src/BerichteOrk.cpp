@@ -1,6 +1,7 @@
 #include <QtGui>
 
 #include "BerichteOrk.h"
+#include "newDatabaseDialog.h"
 
 BerichteOrk::BerichteOrk(QWidget *parent) : QMainWindow(parent)
 {
@@ -14,11 +15,8 @@ BerichteOrk::BerichteOrk(QWidget *parent) : QMainWindow(parent)
 	// Animation
 	wochenTree->setAnimated(actionAnimateYears->isChecked());
 
-	on_actionOpen_triggered();
-
-	// Tabellen
-	initializeModels();
-	initializeViews();
+	// Flag für Models setzen
+	modelsInitialized = false;
 }
 
 void BerichteOrk::initializeModels()
@@ -233,7 +231,25 @@ void BerichteOrk::on_actionOpen_triggered()
 		tr("Datenbank öffnen"),
 		".",
 		tr("Datenbank (*.sqlite)"));
-	dataHandler.openDatabase(fileName);
+	openFile(fileName);
+}
+
+void BerichteOrk::on_actionNew_triggered()
+{
+	NewDatabaseDialog dlg;
+	dlg.exec();
+}
+
+void BerichteOrk::openFile(QString filePath)
+{
+	dataHandler.openDatabase(filePath);
+
+	// Ggfs. Models und Views initialisieren
+	if (!modelsInitialized)
+	{
+		initializeModels();
+		initializeViews();
+	}
 
 	// Wochen errechnen
 	recalculateWeeks();

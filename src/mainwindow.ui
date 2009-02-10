@@ -198,6 +198,9 @@ p, li { white-space: pre-wrap; }
    <property name="text">
     <string>&amp;Beenden</string>
    </property>
+   <property name="iconText">
+    <string>&amp;Beenden</string>
+   </property>
    <property name="menuRole">
     <enum>QAction::QuitRole</enum>
    </property>
@@ -210,6 +213,9 @@ p, li { white-space: pre-wrap; }
    <property name="text">
     <string>&amp;Öffnen...</string>
    </property>
+   <property name="iconText">
+    <string>&amp;Öffnen</string>
+   </property>
   </action>
   <action name="actionNew">
    <property name="icon">
@@ -217,7 +223,10 @@ p, li { white-space: pre-wrap; }
      <normaloff>:/images/images/document-new.png</normaloff>:/images/images/document-new.png</iconset>
    </property>
    <property name="text">
-    <string>&amp;Neu...</string>
+    <string>&amp;Neues Berichtsheft</string>
+   </property>
+   <property name="iconText">
+    <string>&amp;Neues Berichtsheft</string>
    </property>
   </action>
   <action name="actionAnimateYears">

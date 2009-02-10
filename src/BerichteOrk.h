@@ -20,12 +20,15 @@ private:
 	void initializeViews();
 	void recalculateWeeks();
 	void disableAllElements(bool toggle);
+	void openFile(QString filePath);
 	DataHandler dataHandler;
 	QSqlTableModel* schuleModel;
 	QSqlTableModel* betriebModel;
 
 	int selectedYear;
 	int selectedWeek;
+
+	bool modelsInitialized;
 
 private slots:
 	void on_actionAnimateYears_toggled(bool toggled);
@@ -37,6 +40,7 @@ private slots:
 	void betriebModel_beforeInsert(QSqlRecord &record);
 	void schuleModel_beforeInsert(QSqlRecord &record);
 	void on_actionOpen_triggered();
+	void on_actionNew_triggered();
 
 };
 
