@@ -228,9 +228,9 @@ void BerichteOrk::on_actionOpen_triggered()
 {
 	// Datenbank öffnen
 	QString fileName = QFileDialog::getOpenFileName(this,
-		tr("Datenbank öffnen"),
+		tr("Berichtsheft öffnen"),
 		".",
-		tr("Datenbank (*.sqlite)"));
+		tr("Berichtsheft (*.orkreport)"));
 	openFile(fileName);
 }
 
