@@ -5,13 +5,24 @@
 #include <QtSql>
 #include <QDate>
 
-bool DataHandler::openDatabase(QString file)
+bool DataHandler::openDatabase(QString file, bool removeBeforeOpen)
 {
 	// Ggfs. alte DB schließen
-	if (db.isOpen())
-		db.close();
+	if (QSqlDatabase::contains(QSqlDatabase::defaultConnection))
+	{
+		QSqlDatabase::database().close();
+		QSqlDatabase::removeDatabase(QSqlDatabase::defaultConnection);
+	}
 
-	db = QSqlDatabase::addDatabase("QSQLITE");
+	// Angegebene Datei löschen
+	if (removeBeforeOpen && QFile::exists(file))
+	{
+		QFileInfo fh(file);
+		qDebug() << fh.isWritable();
+		qDebug() << QFile::remove(file);
+	}
+
+	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
 	db.setDatabaseName(file);
 
 	if (!db.open())
@@ -50,7 +61,36 @@ QDate DataHandler::getEndDate()
 	return QDate(year, month, day);
 }
 
-DataHandler::~DataHandler()
+bool DataHandler::openNewDatabase(QString file, QDate startDate, QDate endDate)
 {
-	db.close();
+	// Neue DB öffnen
+	if (!openDatabase(file, true))
+		return false;
+
+	// Tabellen erstellen
+	QSqlQuery query;
+	query.exec("\
+		CREATE TABLE 'entry' \
+		('entry_id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, \
+		 'subject' CHAR, \
+		 'text' CHAR NOT NULL, \
+		 'week' INTEGER NOT NULL, \
+		 'year' INTEGER NOT NULL, \
+		 'type' CHAR NOT NULL \
+		 ) \
+		 ");
+	query.exec("CREATE TABLE 'settings' ('key' CHAR PRIMARY KEY  NOT NULL , 'value' CHAR NOT NULL )");
+
+	// Ausbildungsbeginn und -ende eintragen
+	query.prepare("INSERT INTO settings VALUES(:key, :date)");
+	query.bindValue(":date", startDate.toString("yyyyMMdd"));
+	query.bindValue(":key", "startDate");
+	query.exec();
+
+	query.prepare("INSERT INTO settings VALUES(:key, :date)");
+	query.bindValue(":date", endDate.toString("yyyyMMdd"));
+	query.bindValue(":key", "endDate");
+	query.exec();
+
+	return true;
 }

@@ -4,19 +4,25 @@
 class QString;
 
 #include <QtSql>
-
 class DataHandler
 {
 public:
-	~DataHandler();
-	bool openDatabase(QString file);
+	bool openDatabase(QString file, bool removeBeforeOpen = false);
+	bool openNewDatabase(QString file, QDate startDate, QDate endDate);
 	QDate getStartDate();
 	QDate getEndDate();
 	void setStartDate(QDate date);
 	void setEndDate(QDate date);
 
-private:
-	QSqlDatabase db;
+	enum {
+		EntryID = 0,
+		EntrySubject = 1,
+		EntryText = 2,
+		EntryWeek = 3,
+		EntryYear = 4,
+		EntryType = 5
+	};
+
 };
 
 #endif

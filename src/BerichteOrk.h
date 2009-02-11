@@ -18,6 +18,7 @@ public:
 private:
 	void initializeModels();
 	void initializeViews();
+	void initializeGui();
 	void recalculateWeeks();
 	void disableAllElements(bool toggle);
 	void openFile(QString filePath);

@@ -15,7 +15,7 @@ BerichteOrk::BerichteOrk(QWidget *parent) : QMainWindow(parent)
 	// Animation
 	wochenTree->setAnimated(actionAnimateYears->isChecked());
 
-	// Flag für Models setzen
+	// Flags für die Models setzen
 	modelsInitialized = false;
 }
 
@@ -25,8 +25,8 @@ void BerichteOrk::initializeModels()
 	schuleModel = new QSqlTableModel(this);
 	schuleModel->setTable("entry");
 	schuleModel->setFilter("1 = 0");
-	schuleModel->setHeaderData(1, Qt::Horizontal, tr("Fach"));
-	schuleModel->setHeaderData(2, Qt::Horizontal, tr("Thema"));
+	schuleModel->setHeaderData(DataHandler::EntrySubject, Qt::Horizontal, tr("Fach"));
+	schuleModel->setHeaderData(DataHandler::EntryText, Qt::Horizontal, tr("Thema"));
 	schuleModel->setEditStrategy(QSqlTableModel::OnFieldChange);
 	schuleModel->select();
 
@@ -42,18 +42,21 @@ void BerichteOrk::initializeModels()
 		this, SLOT(schuleModel_beforeInsert(QSqlRecord&)));
 	connect(betriebModel, SIGNAL(beforeInsert(QSqlRecord&)),
 		this, SLOT(betriebModel_beforeInsert(QSqlRecord&)));
+
+	// Flag setzen
+	modelsInitialized = true;
 }
 
 void BerichteOrk::initializeViews()
 {
 	schuleView->setModel(schuleModel);
-	schuleView->setColumnHidden(0, true);
-	schuleView->setColumnHidden(3, true);
-	schuleView->setColumnHidden(4, true);
-	schuleView->setColumnHidden(5, true);
+	schuleView->setColumnHidden(DataHandler::EntryID, true);
+	schuleView->setColumnHidden(DataHandler::EntryWeek, true);
+	schuleView->setColumnHidden(DataHandler::EntryYear, true);
+	schuleView->setColumnHidden(DataHandler::EntryType, true);
 
 	betriebView->setModel(betriebModel);
-	betriebView->setModelColumn(2);
+	betriebView->setModelColumn(DataHandler::EntryText);
 }
 
 void BerichteOrk::recalculateWeeks()
@@ -231,19 +234,34 @@ void BerichteOrk::on_actionOpen_triggered()
 		tr("Berichtsheft öffnen"),
 		".",
 		tr("Berichtsheft (*.orkreport)"));
-	openFile(fileName);
+	
+	if (!fileName.isNull())
+	{
+		// Datenbank öffnen
+		dataHandler.openDatabase(fileName);
+
+		// GUI neu konfigurieren
+		initializeGui();
+	}
 }
 
 void BerichteOrk::on_actionNew_triggered()
 {
 	NewDatabaseDialog dlg;
 	dlg.exec();
+
+	if (dlg.result() == QDialog::Accepted)
+	{
+		// Neue Datenbank erstellen und öffnen
+		dataHandler.openNewDatabase(dlg.filePathEdit->text(), dlg.dateStart->date(), dlg.dateEnd->date());
+
+		// GUI neu konfigurieren
+		initializeGui();
+	}
 }
 
-void BerichteOrk::openFile(QString filePath)
-{
-	dataHandler.openDatabase(filePath);
-
+void BerichteOrk::initializeGui()
+{//return;
 	// Ggfs. Models und Views initialisieren
 	if (!modelsInitialized)
 	{

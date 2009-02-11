@@ -2,6 +2,7 @@
 #define NEWDATABASEDIALOG_H
 
 #include <QDialog>
+#include <QtSql>
 
 #include "ui_newDatabaseDialog.h"
 
@@ -14,6 +15,7 @@ public:
 
 private slots:
 	void on_filePathButton_clicked();
+	void accept();
 };
 
 #endif
