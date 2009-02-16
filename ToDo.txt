@@ -1,12 +1,11 @@
 High Prio:
-- Betrieb in Tabelle mit Projekt|Text umbauen
 - Farben in der Jahresliste aktualisieren
 
 Medium Prio:
 - Anzahl der Einträge in der Jahresliste anzeigen
-- Label: Woche 1 - XX.XX.XXXX - XX.XX.XXXX
 - Recent Files
 
 Low Prio:
 - Copy & Paste der Einträge?
 - Beim festlegen von konstanten Größen vorher mit sizehint prüfen ob mind. Größe erreicht
+- Projekt bei Betrieb optional machen
