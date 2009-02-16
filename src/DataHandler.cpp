@@ -8,20 +8,12 @@
 bool DataHandler::openDatabase(QString file, bool removeBeforeOpen)
 {
 	// Ggfs. alte DB schließen
-	if (QSqlDatabase::contains(QSqlDatabase::defaultConnection))
-	{
-		QSqlDatabase::database().close();
-		QSqlDatabase::removeDatabase(QSqlDatabase::defaultConnection);
-	}
+	closeDatabase();
 
 	// Angegebene Datei löschen
 	if (removeBeforeOpen && QFile::exists(file))
-	{
-		QFileInfo fh(file);
-		qDebug() << fh.isWritable();
 		qDebug() << QFile::remove(file);
-	}
-
+	
 	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
 	db.setDatabaseName(file);
 
@@ -32,7 +24,55 @@ bool DataHandler::openDatabase(QString file, bool removeBeforeOpen)
 		return false;
 	}
 
+	createWeekEntriesMapping();
+
 	return true;
+}
+
+void DataHandler::closeDatabase()
+{
+	// Nur schließen wenn auch etwas geöffnet ist
+	if (QSqlDatabase::contains(QSqlDatabase::defaultConnection))
+	{
+		QSqlDatabase::database().close();
+		QSqlDatabase::removeDatabase(QSqlDatabase::defaultConnection);
+
+		// Wocheninhalte leeren
+		weekEntryTypes.clear();
+	}
+}
+
+void DataHandler::createWeekEntriesMapping()
+{
+	QSqlQuery query;
+	query.exec("SELECT year, week FROM entry WHERE type = 'company' GROUP BY year, week");
+	while (query.next())
+	{
+		// Werte in Strings umwandeln
+		QString year = query.value(0).toString();
+		QString week = query.value(1).toString();
+
+		// Date String erstellen
+		unsigned int weekInt = QString("%1%2").arg(year).arg(week, 2, '0').toUInt();
+
+		weekEntryTypes[weekInt] = DataHandler::hasCompanyEntries;
+	}
+
+	query.exec("SELECT year, week FROM entry WHERE type = 'school' GROUP BY year, week");
+	while (query.next())
+	{
+		// Werte in Strings umwandeln
+		QString year = query.value(0).toString();
+		QString week = query.value(1).toString();
+
+		// Date String erstellen
+		unsigned int weekInt = QString("%1%2").arg(year).arg(week, 2, '0').toUInt();
+
+		if (weekEntryTypes[weekInt] == DataHandler::hasCompanyEntries)
+			weekEntryTypes[weekInt] = DataHandler::hasBothEntries;
+		else
+			weekEntryTypes[weekInt] = DataHandler::hasSchoolEntries;
+	}
 }
 
 QDate DataHandler::getStartDate()
@@ -59,6 +99,36 @@ QDate DataHandler::getEndDate()
 	int day = query.value(0).toString().right(2).toInt();
 
 	return QDate(year, month, day);
+}
+
+bool DataHandler::weekHasSchoolEntries(int year, int week)
+{
+	// Date String erstellen
+	unsigned int weekInt = QString("%1%2").arg(year).arg(week, 2, 10, QChar('0')).toUInt();
+
+	if (weekEntryTypes.contains(weekInt))
+	{
+		if (weekEntryTypes[weekInt] == DataHandler::hasBothEntries ||
+			weekEntryTypes[weekInt] == DataHandler::hasSchoolEntries)
+			return true;
+	}
+	
+	return false;
+}
+
+bool DataHandler::weekHasCompanyEntries(int year, int week)
+{
+	// Date String erstellen
+	unsigned int weekInt = QString("%1%2").arg(year).arg(week, 2, 10, QChar('0')).toUInt();
+
+	if (weekEntryTypes.contains(weekInt))
+	{
+		if (weekEntryTypes[weekInt] == DataHandler::hasBothEntries ||
+			weekEntryTypes[weekInt] == DataHandler::hasCompanyEntries)
+			return true;
+	}
+	
+	return false;
 }
 
 bool DataHandler::openNewDatabase(QString file, QDate startDate, QDate endDate)

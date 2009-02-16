@@ -17,3 +17,5 @@ SOURCES += src/newDatabaseDialog.cpp \
            src/DataHandler.cpp \
            src/main.cpp
 RESOURCES += src/resources.qrc
+
+RC_FILE = src/berichteork.rc

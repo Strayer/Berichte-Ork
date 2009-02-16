@@ -8,15 +8,27 @@ BerichteOrk::BerichteOrk(QWidget *parent) : QMainWindow(parent)
 	setupUi(this);
 
 	// Tabellenheader einstellen
-	schuleView->verticalHeader()->hide();
+	//schuleView->verticalHeader()->hide();
 	schuleView->horizontalHeader()->setStretchLastSection(true);
 	disableAllElements(true);
 
 	// Animation
 	wochenTree->setAnimated(actionAnimateYears->isChecked());
 
-	// Flags für die Models setzen
-	modelsInitialized = false;
+	// Models mit NULL belegen
+	schuleModel = NULL;
+	betriebModel = NULL;
+
+	// Zum Datum X springen geht erst nachdem was geöffnet wurde
+	jumpToDateButton->setEnabled(false);
+}
+
+BerichteOrk::~BerichteOrk()
+{
+	// Erst Models entfernen, dann Datenbank schließen
+	// sonst greifen die Models noch auf die DB zu
+	removeModels();
+	dataHandler.closeDatabase();
 }
 
 void BerichteOrk::initializeModels()
@@ -27,24 +39,21 @@ void BerichteOrk::initializeModels()
 	schuleModel->setFilter("1 = 0");
 	schuleModel->setHeaderData(DataHandler::EntrySubject, Qt::Horizontal, tr("Fach"));
 	schuleModel->setHeaderData(DataHandler::EntryText, Qt::Horizontal, tr("Thema"));
-	schuleModel->setEditStrategy(QSqlTableModel::OnFieldChange);
 	schuleModel->select();
+	schuleModel->setEditStrategy(QSqlTableModel::OnFieldChange);
 
 	// Betriebtabelle
 	betriebModel = new QSqlTableModel(this);
 	betriebModel->setTable("entry");
 	betriebModel->setFilter("1 = 0");
-	betriebModel->setEditStrategy(QSqlTableModel::OnFieldChange);
 	betriebModel->select();
+	betriebModel->setEditStrategy(QSqlTableModel::OnFieldChange);
 
 	// Signal/Slots
 	connect(schuleModel, SIGNAL(beforeInsert(QSqlRecord&)),
 		this, SLOT(schuleModel_beforeInsert(QSqlRecord&)));
 	connect(betriebModel, SIGNAL(beforeInsert(QSqlRecord&)),
 		this, SLOT(betriebModel_beforeInsert(QSqlRecord&)));
-
-	// Flag setzen
-	modelsInitialized = true;
 }
 
 void BerichteOrk::initializeViews()
@@ -99,7 +108,20 @@ void BerichteOrk::recalculateWeeks()
 
 		// Einzelne Wochen zur Liste hinzufügen
 		for (int j = firstWeek; j <= lastWeek; j++)
-			weeks.append(new QTreeWidgetItem(QStringList(QString("KW %1").arg(j))));
+		{
+			QTreeWidgetItem* item = new QTreeWidgetItem(QStringList(QString("KW %1").arg(j)));
+
+			bool hasSchoolEntries = dataHandler.weekHasSchoolEntries(i, j);
+			bool hasCompanyEntries = dataHandler.weekHasCompanyEntries(i, j);
+
+			if (!hasSchoolEntries && !hasCompanyEntries)
+				item->setForeground(0, Qt::red);
+			else if ((hasSchoolEntries && !hasCompanyEntries) || 
+				(!hasSchoolEntries && hasCompanyEntries))
+				item->setForeground(0, QColor(255,163,0)); // Orange
+
+			weeks.append(item);
+		}
 
 		// TreeWidgetItem für das Jahr erstellen, Wochen hinzufügen und an die Liste hängen
 		QTreeWidgetItem* yearItem = new QTreeWidgetItem(QStringList(QString("%1").arg(i)));
@@ -195,11 +217,95 @@ void BerichteOrk::on_removeSchuleButton_clicked()
 
 void BerichteOrk::on_addBetriebButton_clicked()
 {
-	int row = betriebModel->rowCount();
-	betriebModel->insertRow(row);
+	// Anzuzeigender Dialog
+	QDialog *dlg = new QDialog(this);
 
-	QModelIndex index = betriebModel->index(row, 2);
-	betriebView->edit(index);
+	// Label
+	QLabel* label = new QLabel(tr("Eintrag:"));
+	
+	// Eingabefeld
+	QLineEdit* edit = new QLineEdit;
+
+	// ButtonBox
+	QDialogButtonBox* box = new QDialogButtonBox(QDialogButtonBox::Save | QDialogButtonBox::Cancel);
+	connect(box, SIGNAL(accepted()), dlg, SLOT(accept()));
+	connect(box, SIGNAL(rejected()), dlg, SLOT(reject()));
+
+	// Text-Layout
+	QHBoxLayout* layout = new QHBoxLayout;
+	layout->addWidget(label);
+	layout->addWidget(edit);
+
+	// Haupt-Layout
+	QVBoxLayout* mLayout = new QVBoxLayout;
+	mLayout->addLayout(layout);
+	mLayout->addWidget(box);
+	dlg->setLayout(mLayout);
+
+	// Dialog anzeigen
+	dlg->exec();
+
+	if (dlg->result() == QDialog::Accepted)
+	{
+		QSqlRecord record = QSqlDatabase::database().record("entry");
+		record.setValue("text", edit->text());
+		betriebModel->insertRecord(-1, record);
+	}
+
+	delete dlg;
+}
+
+void BerichteOrk::on_addSchuleButton_clicked()
+{
+	// Anzuzeigender Dialog
+	QDialog *dlg = new QDialog(this);
+
+	// Label Fach
+	QLabel* labelSubject = new QLabel(tr("Fach:"));
+	
+	// Eingabefeld Fach
+	QLineEdit* editSubject = new QLineEdit;
+
+	// Label Eintrag
+	QLabel* labelEntry = new QLabel(tr("Eintrag:"));
+	
+	// Eingabefeld Eintrag
+	QLineEdit* editEntry = new QLineEdit;
+
+	// ButtonBox
+	QDialogButtonBox* box = new QDialogButtonBox(QDialogButtonBox::Save | QDialogButtonBox::Cancel);
+	connect(box, SIGNAL(accepted()), dlg, SLOT(accept()));
+	connect(box, SIGNAL(rejected()), dlg, SLOT(reject()));
+
+	// Fach-Layout
+	QHBoxLayout* layoutSubject = new QHBoxLayout;
+	layoutSubject->addWidget(labelSubject);
+	layoutSubject->addWidget(editSubject);
+
+	// Eintrag-Layout
+	QHBoxLayout* layoutEntry = new QHBoxLayout;
+	layoutEntry->addWidget(labelEntry);
+	layoutEntry->addWidget(editEntry);
+
+	// Haupt-Layout
+	QVBoxLayout* mLayout = new QVBoxLayout;
+	mLayout->addLayout(layoutSubject);
+	mLayout->addLayout(layoutEntry);
+	mLayout->addWidget(box);
+	dlg->setLayout(mLayout);
+
+	// Dialog anzeigen
+	dlg->exec();
+
+	if (dlg->result() == QDialog::Accepted)
+	{
+		QSqlRecord record = QSqlDatabase::database().record("entry");
+		record.setValue("subject", editSubject->text());
+		record.setValue("text", editEntry->text());
+		schuleModel->insertRecord(-1, record);
+	}
+
+	delete dlg;
 }
 
 void BerichteOrk::betriebModel_beforeInsert(QSqlRecord &record)
@@ -217,16 +323,6 @@ void BerichteOrk::schuleModel_beforeInsert(QSqlRecord &record)
 	record.setValue("type", "school");
 }
 
-void BerichteOrk::on_addSchuleButton_clicked()
-{
-	int row = schuleModel->rowCount();
-	schuleModel->insertRow(row);
-
-	QModelIndex index = schuleModel->index(row, 1);
-	schuleView->setCurrentIndex(index);
-	schuleView->edit(index);
-}
-
 void BerichteOrk::on_actionOpen_triggered()
 {
 	// Datenbank öffnen
@@ -237,6 +333,9 @@ void BerichteOrk::on_actionOpen_triggered()
 	
 	if (!fileName.isNull())
 	{
+		// Bestehende Models löschen
+		removeModels();
+
 		// Datenbank öffnen
 		dataHandler.openDatabase(fileName);
 
@@ -252,6 +351,9 @@ void BerichteOrk::on_actionNew_triggered()
 
 	if (dlg.result() == QDialog::Accepted)
 	{
+		// Bestehende Models löschen
+		removeModels();
+
 		// Neue Datenbank erstellen und öffnen
 		dataHandler.openNewDatabase(dlg.filePathEdit->text(), dlg.dateStart->date(), dlg.dateEnd->date());
 
@@ -261,14 +363,89 @@ void BerichteOrk::on_actionNew_triggered()
 }
 
 void BerichteOrk::initializeGui()
-{//return;
+{
 	// Ggfs. Models und Views initialisieren
-	if (!modelsInitialized)
-	{
-		initializeModels();
-		initializeViews();
-	}
+	initializeModels();
+	initializeViews();
 
 	// Wochen errechnen
 	recalculateWeeks();
+
+	// Datum suchen erlauben
+	jumpToDateButton->setEnabled(true);
+}
+
+void BerichteOrk::removeModels()
+{
+	if (schuleModel != NULL)
+	{
+		schuleView->setModel(NULL);
+		betriebView->setModel(NULL);
+		delete schuleModel;
+		schuleModel = NULL;
+		delete betriebModel;
+		betriebModel = NULL;
+	}
+}
+
+void BerichteOrk::on_jumpToDateButton_clicked()
+{
+	// Anzuzeigender Dialog
+	QDialog *dlg = new QDialog(this);
+
+	// Label Datum
+	QLabel* label = new QLabel(tr("Datum:"));
+	
+	// Eingabefeld Fach
+	QDateEdit* dateEdit = new QDateEdit(QDate::currentDate());
+
+	// ButtonBox
+	QDialogButtonBox* box = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+	connect(box, SIGNAL(accepted()), dlg, SLOT(accept()));
+	connect(box, SIGNAL(rejected()), dlg, SLOT(reject()));
+
+	// Datum-Layout
+	QHBoxLayout* layout = new QHBoxLayout;
+	layout->addWidget(label);
+	layout->addWidget(dateEdit);
+
+	// Haupt-Layout
+	QVBoxLayout* mLayout = new QVBoxLayout;
+	mLayout->addLayout(layout);
+	mLayout->addWidget(box);
+	dlg->setLayout(mLayout);
+
+	// Dialog anzeigen
+	dlg->exec();
+
+	if (dlg->result() == QDialog::Accepted)
+	{
+		int year = NULL;
+		int weekNumber = dateEdit->date().weekNumber(&year);
+
+		// Kalenderwochen suchen
+		QList<QTreeWidgetItem*> foundItems = wochenTree->findItems(QString(" %1").arg(weekNumber), Qt::MatchEndsWith | Qt::MatchRecursive);
+		QTreeWidgetItem *currItem = NULL;
+		
+		// Solange suchen bis entweder ein Jahr gefunden wurde oder die Liste zuende ist
+		bool foundWeek = false;
+		int counter = 0;
+		while (!foundWeek && counter < foundItems.count())
+		{
+			currItem = foundItems.at(counter);
+
+			// Hat das übergeordnete Element auch das korrekte Jahr?
+			if(currItem->parent()->text(0) == QString("%1").arg(year))
+			{
+				wochenTree->setCurrentItem(currItem);
+				
+				// Passendes Jahr gefunden, also abbrechen
+				foundWeek = true;
+			}
+
+			counter++;
+		}
+	}
+
+	delete dlg;
 }

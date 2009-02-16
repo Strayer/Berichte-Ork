@@ -16,6 +16,8 @@ public:
 	BerichteOrk(QWidget *parent = 0);
 
 private:
+	~BerichteOrk();
+	void removeModels();
 	void initializeModels();
 	void initializeViews();
 	void initializeGui();
@@ -29,8 +31,6 @@ private:
 	int selectedYear;
 	int selectedWeek;
 
-	bool modelsInitialized;
-
 private slots:
 	void on_actionAnimateYears_toggled(bool toggled);
 	void on_wochenTree_itemSelectionChanged();
@@ -42,6 +42,7 @@ private slots:
 	void schuleModel_beforeInsert(QSqlRecord &record);
 	void on_actionOpen_triggered();
 	void on_actionNew_triggered();
+	void on_jumpToDateButton_clicked();
 
 };
 
