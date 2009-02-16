@@ -80,34 +80,36 @@ void BerichteOrk::recalculateWeeks()
 	// QList für die Jahre
 	QList<QTreeWidgetItem *> years;
 
-	for (int i = startDate.year(); i <= endDate.year(); i++)
+	// Jahre und Kalenderwochen aus dem Datum holen
+	int startYear, endYear, currFirstWeek, currLastWeek;
+	int startWeek =	startDate.weekNumber(&startYear);
+	int endWeek = endDate.weekNumber(&endYear);
+
+	for (int i = startYear; i <= endYear; i++)
 	{
 		// QList für die Wochen
 		QList<QTreeWidgetItem *> weeks;
 
-		// Start- und Endwochen ermitteln
-		int firstWeek, lastWeek;
-
-		if (i == startDate.year())
-			firstWeek = startDate.weekNumber();
+		if (i == startYear)
+			currFirstWeek = startWeek;
 		else
-			firstWeek = 1;
+			currFirstWeek = 1;
 
-		if (i == endDate.year())
-			lastWeek = endDate.weekNumber();
+		if (i == endYear)
+			currLastWeek = endWeek;
 		else
 		{
 			// Wenn das aktuelle Jahr mit einem Donnerstag anfängt
 			// oder endet -> 53 KWs. Sonst 52 KWs.
 			if (QDate(i, 1, 1).dayOfWeek() == Qt::Thursday ||
 				QDate(i, 12, 31).dayOfWeek() == Qt::Thursday)
-				lastWeek = 53;
+				currLastWeek = 53;
 			else
-				lastWeek = 52;
+				currLastWeek = 52;
 		}
 
 		// Einzelne Wochen zur Liste hinzufügen
-		for (int j = firstWeek; j <= lastWeek; j++)
+		for (int j = currFirstWeek; j <= currLastWeek; j++)
 		{
 			QTreeWidgetItem* item = new QTreeWidgetItem(QStringList(QString("KW %1").arg(j)));
 
