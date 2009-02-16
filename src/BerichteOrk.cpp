@@ -46,6 +46,8 @@ void BerichteOrk::initializeModels()
 	betriebModel = new QSqlTableModel(this);
 	betriebModel->setTable("entry");
 	betriebModel->setFilter("1 = 0");
+	betriebModel->setHeaderData(DataHandler::EntrySubject, Qt::Horizontal, tr("Projekt"));
+	betriebModel->setHeaderData(DataHandler::EntryText, Qt::Horizontal, tr("Thema"));
 	betriebModel->select();
 	betriebModel->setEditStrategy(QSqlTableModel::OnFieldChange);
 
@@ -65,7 +67,10 @@ void BerichteOrk::initializeViews()
 	schuleView->setColumnHidden(DataHandler::EntryType, true);
 
 	betriebView->setModel(betriebModel);
-	betriebView->setModelColumn(DataHandler::EntryText);
+	betriebView->setColumnHidden(DataHandler::EntryID, true);
+	betriebView->setColumnHidden(DataHandler::EntryWeek, true);
+	betriebView->setColumnHidden(DataHandler::EntryYear, true);
+	betriebView->setColumnHidden(DataHandler::EntryType, true);
 }
 
 void BerichteOrk::recalculateWeeks()
@@ -163,6 +168,7 @@ void BerichteOrk::on_wochenTree_itemSelectionChanged()
 		// Nur in der 2. Ebene
 		if (selection.at(0)->parent())
 		{
+			// Gewählte Daten ermitteln
 			selectedYear = selection.at(0)->parent()->text(0).toInt();
 			selectedWeek = selection.at(0)->text(0).mid(3).toInt();
 
@@ -175,6 +181,28 @@ void BerichteOrk::on_wochenTree_itemSelectionChanged()
 			schuleView->resizeColumnsToContents();
 			schuleView->resizeRowsToContents();
 			schuleView->horizontalHeader()->setStretchLastSection(true);
+
+			betriebView->resizeColumnsToContents();
+			betriebView->resizeRowsToContents();
+			betriebView->horizontalHeader()->setStretchLastSection(true);
+
+			// Als erstes den Wochentag vom 1.1. ermitteln
+			int yearStartDay = QDate(selectedYear, 1, 1).dayOfWeek();
+
+			// Tage vom 1.1. bis zu dieser Woche ausrechnen
+			int daysToWeek = ((selectedWeek - 1) * 7) - yearStartDay + 1;
+
+			// Startdatum ermitteln
+			QDate startDate = QDate(selectedYear, 1, 1).addDays(daysToWeek);
+
+			// Enddatum ermitteln
+			QDate endDate = startDate.addDays(6);
+
+			// Label aktualisieren
+			selectedWeekLabel->setText(QString("KW %1, %2 - %3")
+				.arg(selectedWeek)
+				.arg(startDate.toString(Qt::SystemLocaleShortDate))
+				.arg(endDate.toString(Qt::SystemLocaleShortDate)));
 		}
 		// Wenn ein Jahr ausgewählt wurde Elemente deaktivieren
 		else
@@ -186,6 +214,9 @@ void BerichteOrk::on_wochenTree_itemSelectionChanged()
 
 	if (disableElements)
 	{
+		// Label aktualisieren
+		selectedWeekLabel->setText("Keine Woche gewählt...");
+
 		// Filter setzen damit die Views leer sind
 		schuleModel->setFilter("1 = 0");
 		betriebModel->setFilter("1 = 0");
@@ -213,8 +244,6 @@ void BerichteOrk::on_removeSchuleButton_clicked()
 	{
 		schuleModel->removeRow(index.row());
 	}
-
-	schuleModel->select();
 }
 
 void BerichteOrk::on_addBetriebButton_clicked()
@@ -222,25 +251,37 @@ void BerichteOrk::on_addBetriebButton_clicked()
 	// Anzuzeigender Dialog
 	QDialog *dlg = new QDialog(this);
 
-	// Label
-	QLabel* label = new QLabel(tr("Eintrag:"));
+	// Label Fach
+	QLabel* labelSubject = new QLabel(tr("Projekt:"));
 	
-	// Eingabefeld
-	QLineEdit* edit = new QLineEdit;
+	// Eingabefeld Fach
+	QLineEdit* editSubject = new QLineEdit;
+
+	// Label Eintrag
+	QLabel* labelEntry = new QLabel(tr("Eintrag:"));
+	
+	// Eingabefeld Eintrag
+	QLineEdit* editEntry = new QLineEdit;
 
 	// ButtonBox
 	QDialogButtonBox* box = new QDialogButtonBox(QDialogButtonBox::Save | QDialogButtonBox::Cancel);
 	connect(box, SIGNAL(accepted()), dlg, SLOT(accept()));
 	connect(box, SIGNAL(rejected()), dlg, SLOT(reject()));
 
-	// Text-Layout
-	QHBoxLayout* layout = new QHBoxLayout;
-	layout->addWidget(label);
-	layout->addWidget(edit);
+	// Fach-Layout
+	QHBoxLayout* layoutSubject = new QHBoxLayout;
+	layoutSubject->addWidget(labelSubject);
+	layoutSubject->addWidget(editSubject);
+
+	// Eintrag-Layout
+	QHBoxLayout* layoutEntry = new QHBoxLayout;
+	layoutEntry->addWidget(labelEntry);
+	layoutEntry->addWidget(editEntry);
 
 	// Haupt-Layout
 	QVBoxLayout* mLayout = new QVBoxLayout;
-	mLayout->addLayout(layout);
+	mLayout->addLayout(layoutSubject);
+	mLayout->addLayout(layoutEntry);
 	mLayout->addWidget(box);
 	dlg->setLayout(mLayout);
 
@@ -250,7 +291,8 @@ void BerichteOrk::on_addBetriebButton_clicked()
 	if (dlg->result() == QDialog::Accepted)
 	{
 		QSqlRecord record = QSqlDatabase::database().record("entry");
-		record.setValue("text", edit->text());
+		record.setValue("subject", editSubject->text());
+		record.setValue("text", editEntry->text());
 		betriebModel->insertRecord(-1, record);
 	}
 
@@ -312,7 +354,6 @@ void BerichteOrk::on_addSchuleButton_clicked()
 
 void BerichteOrk::betriebModel_beforeInsert(QSqlRecord &record)
 {
-	record.setValue("subject", "");
 	record.setValue("year", selectedYear);
 	record.setValue("week", selectedWeek);
 	record.setValue("type", "company");
