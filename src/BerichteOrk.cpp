@@ -8,8 +8,8 @@ BerichteOrk::BerichteOrk(QWidget *parent) : QMainWindow(parent)
 	setupUi(this);
 
 	// Tabellenheader einstellen
-	//schuleView->verticalHeader()->hide();
-	schuleView->horizontalHeader()->setStretchLastSection(true);
+	schuleView->verticalHeader()->hide();
+	betriebView->verticalHeader()->hide();
 	disableAllElements(true);
 
 	// Animation
@@ -294,6 +294,10 @@ void BerichteOrk::on_addBetriebButton_clicked()
 		record.setValue("subject", editSubject->text());
 		record.setValue("text", editEntry->text());
 		betriebModel->insertRecord(-1, record);
+
+		betriebView->resizeColumnsToContents();
+		betriebView->resizeRowsToContents();
+		betriebView->horizontalHeader()->setStretchLastSection(true);
 	}
 
 	delete dlg;
@@ -347,6 +351,10 @@ void BerichteOrk::on_addSchuleButton_clicked()
 		record.setValue("subject", editSubject->text());
 		record.setValue("text", editEntry->text());
 		schuleModel->insertRecord(-1, record);
+
+		schuleView->resizeColumnsToContents();
+		schuleView->resizeRowsToContents();
+		schuleView->horizontalHeader()->setStretchLastSection(true);
 	}
 
 	delete dlg;

@@ -1,5 +1,4 @@
 #include <QApplication>
-#include <QtSql>
 
 #include "BerichteOrk.h"
 
