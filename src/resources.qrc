@@ -1,6 +1,5 @@
 <RCC>
   <qresource prefix="images" >
-    <file>images/tools-wizard.png</file>
     <file>images/accessories-text-editor.png</file>
     <file>images/application-pdf.png</file>
     <file>images/document-new.png</file>

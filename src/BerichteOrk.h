@@ -5,6 +5,7 @@
 
 #include "ui_mainwindow.h"
 #include "DataHandler.h"
+#include "WeekModel.h"
 
 class QSqlRecord;
 
@@ -21,19 +22,18 @@ private:
 	void initializeModels();
 	void initializeViews();
 	void initializeGui();
-	void recalculateWeeks();
 	void disableAllElements(bool toggle);
 	void openFile(QString filePath);
 	DataHandler dataHandler;
 	QSqlTableModel* schuleModel;
 	QSqlTableModel* betriebModel;
+	WeekModel* weekModel;
 
 	int selectedYear;
 	int selectedWeek;
 
 private slots:
-	void on_actionAnimateYears_toggled(bool toggled);
-	void on_wochenTree_itemSelectionChanged();
+	void wochenTree_itemSelectionChanged();
 	void on_removeBetriebButton_clicked();
 	void on_removeSchuleButton_clicked();
 	void on_addBetriebButton_clicked();

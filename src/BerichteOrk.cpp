@@ -12,9 +12,6 @@ BerichteOrk::BerichteOrk(QWidget *parent) : QMainWindow(parent)
 	betriebView->verticalHeader()->hide();
 	disableAllElements(true);
 
-	// Animation
-	wochenTree->setAnimated(actionAnimateYears->isChecked());
-
 	// Models mit NULL belegen
 	schuleModel = NULL;
 	betriebModel = NULL;
@@ -33,6 +30,9 @@ BerichteOrk::~BerichteOrk()
 
 void BerichteOrk::initializeModels()
 {
+	// Wochenliste
+	weekModel = new WeekModel(dataHandler.getStartDate(), dataHandler.getEndDate(), this);
+
 	// Schultabelle
 	schuleModel = new QSqlTableModel(this);
 	schuleModel->setTable("entry");
@@ -71,73 +71,10 @@ void BerichteOrk::initializeViews()
 	betriebView->setColumnHidden(DataHandler::EntryWeek, true);
 	betriebView->setColumnHidden(DataHandler::EntryYear, true);
 	betriebView->setColumnHidden(DataHandler::EntryType, true);
-}
 
-void BerichteOrk::recalculateWeeks()
-{
-	// Tree leeren
-	wochenTree->clear();
-
-	// Daten aus der Datenbank holen
-	QDate startDate = dataHandler.getStartDate();
-	QDate endDate = dataHandler.getEndDate();
-
-	// QList für die Jahre
-	QList<QTreeWidgetItem *> years;
-
-	// Jahre und Kalenderwochen aus dem Datum holen
-	int startYear, endYear, currFirstWeek, currLastWeek;
-	int startWeek =	startDate.weekNumber(&startYear);
-	int endWeek = endDate.weekNumber(&endYear);
-
-	for (int i = startYear; i <= endYear; i++)
-	{
-		// QList für die Wochen
-		QList<QTreeWidgetItem *> weeks;
-
-		if (i == startYear)
-			currFirstWeek = startWeek;
-		else
-			currFirstWeek = 1;
-
-		if (i == endYear)
-			currLastWeek = endWeek;
-		else
-		{
-			// Wenn das aktuelle Jahr mit einem Donnerstag anfängt
-			// oder endet -> 53 KWs. Sonst 52 KWs.
-			if (QDate(i, 1, 1).dayOfWeek() == Qt::Thursday ||
-				QDate(i, 12, 31).dayOfWeek() == Qt::Thursday)
-				currLastWeek = 53;
-			else
-				currLastWeek = 52;
-		}
-
-		// Einzelne Wochen zur Liste hinzufügen
-		for (int j = currFirstWeek; j <= currLastWeek; j++)
-		{
-			QTreeWidgetItem* item = new QTreeWidgetItem(QStringList(QString("KW %1").arg(j)));
-
-			bool hasSchoolEntries = dataHandler.weekHasSchoolEntries(i, j);
-			bool hasCompanyEntries = dataHandler.weekHasCompanyEntries(i, j);
-
-			if (!hasSchoolEntries && !hasCompanyEntries)
-				item->setForeground(0, Qt::red);
-			else if ((hasSchoolEntries && !hasCompanyEntries) || 
-				(!hasSchoolEntries && hasCompanyEntries))
-				item->setForeground(0, QColor(255,163,0)); // Orange
-
-			weeks.append(item);
-		}
-
-		// TreeWidgetItem für das Jahr erstellen, Wochen hinzufügen und an die Liste hängen
-		QTreeWidgetItem* yearItem = new QTreeWidgetItem(QStringList(QString("%1").arg(i)));
-		yearItem->addChildren(weeks);
-		years.append(yearItem);
-	}
-
-	// Jahre und Wochen ins TreeWidget einfügen
-	wochenTree->insertTopLevelItems(0, years);
+	wochenTree->setModel(weekModel);
+	connect(wochenTree->selectionModel(), SIGNAL(selectionChanged(QItemSelection, QItemSelection)),
+		this, SLOT(wochenTree_itemSelectionChanged()));
 }
 
 void BerichteOrk::disableAllElements(bool toggle)
@@ -150,27 +87,23 @@ void BerichteOrk::disableAllElements(bool toggle)
 	addSchuleButton->setEnabled(!toggle);
 }
 
-void BerichteOrk::on_actionAnimateYears_toggled(bool toggled)
-{
-	wochenTree->setAnimated(toggled);
-}
-
-void BerichteOrk::on_wochenTree_itemSelectionChanged()
+void BerichteOrk::wochenTree_itemSelectionChanged()
 {
 	// Wird auf true gesetzt wenn die GUI Elemente deaktiviert werden sollen
 	bool disableElements = false;
 
 	// Dieses Signal wird auch von clear() aufgerugen,
 	// also erstmal prüfen ob überhaupt was im TreeWidget drin ist
-	QList<QTreeWidgetItem*> selection = wochenTree->selectedItems();
+	QModelIndexList selection = wochenTree->selectionModel()->selectedIndexes();
+
 	if (!selection.isEmpty())
 	{
 		// Nur in der 2. Ebene
-		if (selection.at(0)->parent())
+		if (selection.at(0).parent().isValid())
 		{
 			// Gewählte Daten ermitteln
-			selectedYear = selection.at(0)->parent()->text(0).toInt();
-			selectedWeek = selection.at(0)->text(0).mid(3).toInt();
+			selectedYear = selection.at(0).parent().data().toInt();
+			selectedWeek = selection.at(0).data().toString().mid(3).toInt();
 
 			schuleModel->setFilter(QString("week = %1 AND year = %2 AND type = \"school\"").arg(selectedWeek).arg(selectedYear));
 			schuleModel->select();
@@ -419,9 +352,6 @@ void BerichteOrk::initializeGui()
 	initializeModels();
 	initializeViews();
 
-	// Wochen errechnen
-	recalculateWeeks();
-
 	// Datum suchen erlauben
 	jumpToDateButton->setEnabled(true);
 }
@@ -441,6 +371,7 @@ void BerichteOrk::removeModels()
 
 void BerichteOrk::on_jumpToDateButton_clicked()
 {
+	/*
 	// Anzuzeigender Dialog
 	QDialog *dlg = new QDialog(this);
 
@@ -499,4 +430,5 @@ void BerichteOrk::on_jumpToDateButton_clicked()
 	}
 
 	delete dlg;
+	*/
 }

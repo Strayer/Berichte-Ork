@@ -3,19 +3,21 @@
 ######################################################################
 
 TEMPLATE = app
-TARGET = 
-DEPENDPATH += . debug release src
+TARGET = Berichte-Ork
+DEPENDPATH += . src
 INCLUDEPATH += .
 
 QT += sql
 
 # Input
-HEADERS += src/newDatabaseDialog.h src/BerichteOrk.h src/DataHandler.h
+HEADERS += src/newDatabaseDialog.h src/BerichteOrk.h src/DataHandler.h src/WeekModel.h src/WeekModelItem.h 
 FORMS += src/mainwindow.ui src/newDatabaseDialog.ui
 SOURCES += src/newDatabaseDialog.cpp \
            src/BerichteOrk.cpp \
            src/DataHandler.cpp \
-           src/main.cpp
+           src/main.cpp \
+		   src/WeekModel.cpp \
+		   src/WeekModelItem.cpp
 RESOURCES += src/resources.qrc
 
 RC_FILE = src/berichteork.rc

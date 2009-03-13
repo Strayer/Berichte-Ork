@@ -55,7 +55,7 @@
       <item>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
-         <widget class="QTreeWidget" name="wochenTree">
+         <widget class="QTreeView" name="wochenTree">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
             <horstretch>0</horstretch>
@@ -87,11 +87,6 @@ p, li { white-space: pre-wrap; }
           <property name="uniformRowHeights">
            <bool>true</bool>
           </property>
-          <column>
-           <property name="text">
-            <string>Jahre</string>
-           </property>
-          </column>
          </widget>
         </item>
         <item>
@@ -220,8 +215,6 @@ p, li { white-space: pre-wrap; }
    <addaction name="actionNew"/>
    <addaction name="actionOpen"/>
    <addaction name="separator"/>
-   <addaction name="actionAnimateYears"/>
-   <addaction name="separator"/>
    <addaction name="actionGeneratePDF"/>
    <addaction name="separator"/>
    <addaction name="actionBeenden"/>
@@ -272,21 +265,6 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="iconText">
     <string>&amp;Neues Berichtsheft</string>
-   </property>
-  </action>
-  <action name="actionAnimateYears">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="resources.qrc">
-     <normaloff>:/images/images/tools-wizard.png</normaloff>:/images/images/tools-wizard.png</iconset>
-   </property>
-   <property name="text">
-    <string>Jahresliste animieren</string>
    </property>
   </action>
  </widget>
