@@ -1,9 +1,11 @@
 #include "WeekModelItem.h"
 
-WeekModelItem::WeekModelItem(const QString &data, WeekModelItem *parent)
+WeekModelItem::WeekModelItem(int year, int week, WeekModelItem *parent)
 {
 	parentItem = parent;
-	itemData = data;
+	itemYear = year;
+	itemWeek = week;
+	itemData = (year * 100) + week;
 }
 
 WeekModelItem::~WeekModelItem()

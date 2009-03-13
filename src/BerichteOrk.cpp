@@ -102,8 +102,9 @@ void BerichteOrk::wochenTree_itemSelectionChanged()
 		if (selection.at(0).parent().isValid())
 		{
 			// Gewählte Daten ermitteln
-			selectedYear = selection.at(0).parent().data().toInt();
-			selectedWeek = selection.at(0).data().toString().mid(3).toInt();
+			WeekModelItem* item = static_cast<WeekModelItem*>(selection.at(0).internalPointer());
+			selectedYear = item->year();
+			selectedWeek = item->week();
 
 			schuleModel->setFilter(QString("week = %1 AND year = %2 AND type = \"school\"").arg(selectedWeek).arg(selectedYear));
 			schuleModel->select();

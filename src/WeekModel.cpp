@@ -3,7 +3,7 @@
 WeekModel::WeekModel(QDate &startDate, QDate &endDate, QObject *parent /* = 0 */)
 	: QAbstractItemModel(parent)
 {
-	rootItem = new WeekModelItem(tr("Jahre"));
+	rootItem = new WeekModelItem();
 	setDateRange(startDate, endDate);
 }
 
@@ -73,12 +73,24 @@ QVariant WeekModel::data(const QModelIndex &index, int role) const
 	if (!index.isValid())
 		return QVariant();
 
-	if (role != Qt::DisplayRole)
+	if (role != Qt::DisplayRole &&
+		role != Qt::EditRole)
 		return QVariant();
 
 	WeekModelItem *item = static_cast<WeekModelItem*>(index.internalPointer());
 
-	return item->data(index.column());
+	if (role == Qt::DisplayRole)
+	{
+		// Wenn der Vater invalid ist, ist das item ein übergeordnetes Objekt
+		// -> Jahr
+		if (!index.parent().isValid())
+			return QString("%1").arg(item->year());
+		// Wenn das item einen Vater hat ist es eine Kalenderwoche
+		else
+			return QString("KW %1").arg(item->week());
+	}
+	else
+		return item->data(index.column());
 }
 
 Qt::ItemFlags WeekModel::flags(const QModelIndex &index) const
@@ -125,13 +137,13 @@ void WeekModel::setDateRange(QDate &startDate, QDate &endDate)
 		}
 
 		// WeekModelItem für das Jahr erstellen
-		WeekModelItem *newYearItem = new WeekModelItem(QString("%1").arg(i), rootItem);
+		WeekModelItem *newYearItem = new WeekModelItem(i, 0, rootItem);
 		rootItem->appendChild(newYearItem);
 
 		// Einzelne Wochen zur Liste hinzufügen
 		for (int j = currFirstWeek; j <= currLastWeek; j++)
 		{
-			newYearItem->appendChild(new WeekModelItem(QString("KW %1").arg(j), newYearItem));
+			newYearItem->appendChild(new WeekModelItem(i, j, newYearItem));
 		}
 	}
 }
