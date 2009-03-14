@@ -139,16 +139,15 @@ bool DataHandler::openNewDatabase(QString file, QDate startDate, QDate endDate)
 
 	// Tabellen erstellen
 	QSqlQuery query;
-	query.exec("\
-		CREATE TABLE 'entry' \
-		('entry_id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, \
-		 'subject' CHAR, \
-		 'text' CHAR NOT NULL, \
-		 'week' INTEGER NOT NULL, \
-		 'year' INTEGER NOT NULL, \
-		 'type' CHAR NOT NULL \
-		 ) \
-		 ");
+	query.exec( "CREATE TABLE 'entry' "
+				"( "
+				 "'entry_id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+				 "'subject' CHAR, "
+				 "'text' CHAR NOT NULL, "
+				 "'week' INTEGER NOT NULL, "
+				 "'year' INTEGER NOT NULL, "
+				 "'type' CHAR NOT NULL "
+				")");
 	query.exec("CREATE TABLE 'settings' ('key' CHAR PRIMARY KEY  NOT NULL , 'value' CHAR NOT NULL )");
 
 	// Ausbildungsbeginn und -ende eintragen
