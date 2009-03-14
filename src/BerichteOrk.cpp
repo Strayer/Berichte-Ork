@@ -363,16 +363,18 @@ void BerichteOrk::removeModels()
 	{
 		schuleView->setModel(NULL);
 		betriebView->setModel(NULL);
+		wochenTree->setModel(NULL);
 		delete schuleModel;
 		schuleModel = NULL;
 		delete betriebModel;
 		betriebModel = NULL;
+		delete weekModel;
+		weekModel = NULL;
 	}
 }
 
 void BerichteOrk::on_jumpToDateButton_clicked()
 {
-	/*
 	// Anzuzeigender Dialog
 	QDialog *dlg = new QDialog(this);
 
@@ -380,7 +382,10 @@ void BerichteOrk::on_jumpToDateButton_clicked()
 	QLabel* label = new QLabel(tr("Datum:"));
 	
 	// Eingabefeld Fach
-	QDateEdit* dateEdit = new QDateEdit(QDate::currentDate());
+	QDateEdit* dateEdit = new QDateEdit();
+	dateEdit->setMinimumDate(dataHandler.getStartDate());
+	dateEdit->setMaximumDate(dataHandler.getEndDate());
+	dateEdit->setDate(QDate::currentDate());
 
 	// ButtonBox
 	QDialogButtonBox* box = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
@@ -406,30 +411,16 @@ void BerichteOrk::on_jumpToDateButton_clicked()
 		int year = NULL;
 		int weekNumber = dateEdit->date().weekNumber(&year);
 
-		// Kalenderwochen suchen
-		QList<QTreeWidgetItem*> foundItems = wochenTree->findItems(QString(" %1").arg(weekNumber), Qt::MatchEndsWith | Qt::MatchRecursive);
-		QTreeWidgetItem *currItem = NULL;
-		
-		// Solange suchen bis entweder ein Jahr gefunden wurde oder die Liste zuende ist
-		bool foundWeek = false;
-		int counter = 0;
-		while (!foundWeek && counter < foundItems.count())
+		// QModelIndex aus dem Model holen
+		QModelIndex index = weekModel->week(year, weekNumber);
+
+		// Gibt es das Datum im Index? Nur zur Sicherheit...
+		// das Eingabefeld lässt nichts anderes zu
+		if (index.isValid())
 		{
-			currItem = foundItems.at(counter);
-
-			// Hat das übergeordnete Element auch das korrekte Jahr?
-			if(currItem->parent()->text(0) == QString("%1").arg(year))
-			{
-				wochenTree->setCurrentItem(currItem);
-				
-				// Passendes Jahr gefunden, also abbrechen
-				foundWeek = true;
-			}
-
-			counter++;
+			wochenTree->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
 		}
 	}
 
 	delete dlg;
-	*/
 }

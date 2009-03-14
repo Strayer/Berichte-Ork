@@ -25,10 +25,13 @@ public:
 	int rowCount(const QModelIndex &parent = QModelIndex()) const;
 	int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
+	QModelIndex week(int year, int week) const;
+
 private:
 	void setDateRange(QDate &startDate, QDate &endDate);
 
 	WeekModelItem *rootItem;
+	QHash<int, WeekModelItem*> weekMap;
 };
 
 #endif

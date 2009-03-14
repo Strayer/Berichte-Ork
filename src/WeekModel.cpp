@@ -60,7 +60,7 @@ int WeekModel::rowCount(const QModelIndex &parent) const
 	return parentItem->childCount();
 }
  
-int WeekModel::columnCount(const QModelIndex &parent /* = QModelIndex */) const
+int WeekModel::columnCount(const QModelIndex &parent) const
 {
 	if (parent.isValid())
 		return static_cast<WeekModelItem*>(parent.internalPointer())->columnCount();
@@ -87,7 +87,7 @@ QVariant WeekModel::data(const QModelIndex &index, int role) const
 			return QString("%1").arg(item->year());
 		// Wenn das item einen Vater hat ist es eine Kalenderwoche
 		else
-			return QString("KW %1").arg(item->week());
+			return QString(tr("KW %1")).arg(item->week());
 	}
 	else
 		return item->data(index.column());
@@ -143,7 +143,25 @@ void WeekModel::setDateRange(QDate &startDate, QDate &endDate)
 		// Einzelne Wochen zur Liste hinzufügen
 		for (int j = currFirstWeek; j <= currLastWeek; j++)
 		{
-			newYearItem->appendChild(new WeekModelItem(i, j, newYearItem));
+			WeekModelItem *newWeekItem = new WeekModelItem(i, j, newYearItem);
+			newYearItem->appendChild(newWeekItem);
+			weekMap.insert(((i*100) + j), newWeekItem);
 		}
 	}
+}
+
+QModelIndex WeekModel::week(int year, int week) const
+{
+	// Map-Index aus den Parametern bauen
+	int index = (year * 100) + week;
+
+	// Existiert ein Element mit diesem Index?
+	if (weekMap.contains(index))
+	{
+		// QModelIndex erstellen und zurückgeben
+		return createIndex(weekMap.value(index)->row(), 0, weekMap.value(index));
+	}
+	else
+		// So ein Element gibt es nicht
+		return QModelIndex();
 }
