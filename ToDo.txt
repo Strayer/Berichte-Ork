@@ -4,6 +4,7 @@ High Prio:
 
 Medium Prio:
 - Recent Files
+- Kalenderding
 
 Low Prio:
 - Copy & Paste der Einträge?

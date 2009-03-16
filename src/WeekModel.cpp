@@ -90,8 +90,8 @@ QVariant WeekModel::data(const QModelIndex &index, int role) const
 		// Wenn das item einen Vater hat ist es eine Kalenderwoche
 		else
 		{
-			unsigned int companyCount = dataHandler->weekCompanyEntryCount(item->year(), item->week());
-			unsigned int schoolCount = dataHandler->weekSchoolEntryCount(item->year(), item->week());
+			unsigned int companyCount = getCachedCompanyCount(item->year(), item->week());
+			unsigned int schoolCount = getCachedSchoolCount(item->year(), item->week());
 
 			if (companyCount > 0 || schoolCount > 0)
 				return QString(tr("KW %1 [%2|%3]")).arg(item->week()).arg(companyCount).arg(schoolCount);
@@ -106,8 +106,8 @@ QVariant WeekModel::data(const QModelIndex &index, int role) const
 		if (!index.parent().isValid())
 			return Qt::black;
 
-		unsigned int companyCount = dataHandler->weekCompanyEntryCount(item->year(), item->week());
-		unsigned int schoolCount = dataHandler->weekSchoolEntryCount(item->year(), item->week());
+		unsigned int companyCount = getCachedCompanyCount(item->year(), item->week());
+		unsigned int schoolCount = getCachedSchoolCount(item->year(), item->week());
 
 		if (companyCount > 0 && schoolCount > 0)
 			return Qt::black;
@@ -173,11 +173,14 @@ void WeekModel::setDateRange(QDate &startDate, QDate &endDate)
 			WeekModelItem *newWeekItem = new WeekModelItem(i, j, newYearItem);
 			newYearItem->appendChild(newWeekItem);
 			weekMap.insert(((i*100) + j), newWeekItem);
+
+			// Cache der Woche erstellen
+			updateCounterCache(i, j);
 		}
 	}
 }
 
-QModelIndex WeekModel::week(int year, int week) const
+QModelIndex WeekModel::week(int year, int week)
 {
 	// Map-Index aus den Parametern bauen
 	int index = (year * 100) + week;
@@ -191,4 +194,38 @@ QModelIndex WeekModel::week(int year, int week) const
 	else
 		// So ein Element gibt es nicht
 		return QModelIndex();
+}
+
+void WeekModel::weekChanged(int year, int week)
+{
+	QModelIndex changedWeek = this->week(year, week);
+
+	if (changedWeek.isValid())
+	{
+		// Cache aktualisieren
+		updateCounterCache(year, week);
+		emit dataChanged(changedWeek, changedWeek);
+	}
+}
+
+unsigned int WeekModel::getCachedCompanyCount(int year, int week) const
+{
+	int yearweek = (year * 100) + week;
+
+	return weekCompanyCountCache.value(yearweek);
+}
+
+unsigned int WeekModel::getCachedSchoolCount(int year, int week) const
+{
+	int yearweek = (year * 100) + week;
+
+	return weekSchoolCountCache.value(yearweek);
+}
+
+void WeekModel::updateCounterCache(int year, int week)
+{
+	int yearweek = (year * 100) + week;
+
+	weekCompanyCountCache.insert(yearweek, dataHandler->weekCompanyEntryCount(year, week));
+	weekSchoolCountCache.insert(yearweek, dataHandler->weekSchoolEntryCount(year, week));
 }

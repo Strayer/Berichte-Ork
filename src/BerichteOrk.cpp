@@ -229,6 +229,9 @@ void BerichteOrk::on_addBetriebButton_clicked()
 		record.setValue("text", editEntry->text());
 		betriebModel->insertRecord(-1, record);
 
+		// Model aktualisieren
+		weekModel->weekChanged(selectedYear, selectedWeek);
+
 		betriebView->resizeColumnsToContents();
 		betriebView->resizeRowsToContents();
 		betriebView->horizontalHeader()->setStretchLastSection(true);
@@ -285,6 +288,9 @@ void BerichteOrk::on_addSchuleButton_clicked()
 		record.setValue("subject", editSubject->text());
 		record.setValue("text", editEntry->text());
 		schuleModel->insertRecord(-1, record);
+
+		// Model aktualisieren
+		weekModel->weekChanged(selectedYear, selectedWeek);
 
 		schuleView->resizeColumnsToContents();
 		schuleView->resizeRowsToContents();

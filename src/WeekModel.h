@@ -26,13 +26,21 @@ public:
 	int rowCount(const QModelIndex &parent = QModelIndex()) const;
 	int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
-	QModelIndex week(int year, int week) const;
+	QModelIndex week(int year, int week);
+
+	void weekChanged(int year, int week);
+	void updateCounterCache(int year, int week);
 
 private:
 	void setDateRange(QDate &startDate, QDate &endDate);
 
+	unsigned int getCachedCompanyCount(int year, int week) const;
+	unsigned int getCachedSchoolCount(int year, int week) const;
+
 	WeekModelItem *rootItem;
 	QHash<int, WeekModelItem*> weekMap;
+	QHash<int, unsigned int> weekCompanyCountCache;
+	QHash<int, unsigned int> weekSchoolCountCache;
 	DataHandler *dataHandler;
 };
 
