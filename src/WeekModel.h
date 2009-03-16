@@ -6,6 +6,7 @@
 #include <QtCore/QVariant>
 #include <QtCore/QDate>
 
+#include "DataHandler.h"
 #include "WeekModelItem.h"
 
 class WeekModel : public QAbstractItemModel
@@ -13,7 +14,7 @@ class WeekModel : public QAbstractItemModel
 	Q_OBJECT
 
 public:
-	WeekModel(QDate &startDate, QDate &endDate, QObject *parent = 0);
+	WeekModel(DataHandler *dHandler, QObject *parent = 0);
 	~WeekModel();
 
 	QVariant data(const QModelIndex &index, int role) const;
@@ -32,6 +33,7 @@ private:
 
 	WeekModelItem *rootItem;
 	QHash<int, WeekModelItem*> weekMap;
+	DataHandler *dataHandler;
 };
 
 #endif

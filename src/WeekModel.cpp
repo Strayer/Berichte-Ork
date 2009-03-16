@@ -1,10 +1,11 @@
 #include "WeekModel.h"
 
-WeekModel::WeekModel(QDate &startDate, QDate &endDate, QObject *parent /* = 0 */)
+WeekModel::WeekModel(DataHandler *dHandler, QObject *parent /* = 0 */)
 	: QAbstractItemModel(parent)
 {
 	rootItem = new WeekModelItem();
-	setDateRange(startDate, endDate);
+	dataHandler = dHandler;
+	setDateRange(dataHandler->getStartDate(), dataHandler->getEndDate());
 }
 
 WeekModel::~WeekModel()
@@ -87,7 +88,15 @@ QVariant WeekModel::data(const QModelIndex &index, int role) const
 			return QString("%1").arg(item->year());
 		// Wenn das item einen Vater hat ist es eine Kalenderwoche
 		else
-			return QString(tr("KW %1")).arg(item->week());
+		{
+			unsigned int companyCount = dataHandler->weekCompanyEntryCount(item->year(), item->week());
+			unsigned int schoolCount = dataHandler->weekSchoolEntryCount(item->year(), item->week());
+
+			if (companyCount > 0 || schoolCount > 0)
+				return QString(tr("KW %1 [%2|%3]")).arg(item->week()).arg(companyCount).arg(schoolCount);
+			else
+				return QString(tr("KW %1")).arg(item->week());
+		}
 	}
 	else
 		return item->data(index.column());

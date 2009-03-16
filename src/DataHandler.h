@@ -12,12 +12,12 @@ public:
 	bool openDatabase(QString file, bool removeBeforeOpen = false);
 	bool openNewDatabase(QString file, QDate startDate, QDate endDate);
 	void closeDatabase();
-	bool weekHasSchoolEntries(int year, int week);
-	bool weekHasCompanyEntries(int year, int week);
 	QDate getStartDate();
 	QDate getEndDate();
 	void setStartDate(QDate date);
 	void setEndDate(QDate date);
+	unsigned int weekCompanyEntryCount(int year, int week);
+	unsigned int weekSchoolEntryCount(int year, int week);
 
 	enum {
 		EntryID = 0,
@@ -27,17 +27,6 @@ public:
 		EntryYear = 4,
 		EntryType = 5
 	};
-
-	enum {
-		hasCompanyEntries = 0,
-		hasSchoolEntries = 1,
-		hasBothEntries = 2
-	};
-
-private:
-	void createWeekEntriesMapping();
-	QMap<unsigned int, unsigned short> weekEntryTypes;
-
 };
 
 #endif

@@ -31,7 +31,7 @@ BerichteOrk::~BerichteOrk()
 void BerichteOrk::initializeModels()
 {
 	// Wochenliste
-	weekModel = new WeekModel(dataHandler.getStartDate(), dataHandler.getEndDate(), this);
+	weekModel = new WeekModel(&dataHandler, this);
 
 	// Schultabelle
 	schuleModel = new QSqlTableModel(this);
