@@ -1,8 +1,8 @@
 High Prio:
-- Farben in der Jahresliste aktualisieren
+- Farben in der Jahresliste aktualisieren (dataChanged)
+- PDF Export
 
 Medium Prio:
-- Anzahl der Einträge in der Jahresliste anzeigen
 - Recent Files
 
 Low Prio:
