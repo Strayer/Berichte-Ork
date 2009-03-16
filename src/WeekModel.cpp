@@ -75,7 +75,8 @@ QVariant WeekModel::data(const QModelIndex &index, int role) const
 		return QVariant();
 
 	if (role != Qt::DisplayRole &&
-		role != Qt::EditRole)
+		role != Qt::EditRole && 
+		role != Qt::ForegroundRole)
 		return QVariant();
 
 	WeekModelItem *item = static_cast<WeekModelItem*>(index.internalPointer());
@@ -97,6 +98,23 @@ QVariant WeekModel::data(const QModelIndex &index, int role) const
 			else
 				return QString(tr("KW %1")).arg(item->week());
 		}
+	}
+	else if (role = Qt::ForegroundRole)
+	{
+		// Wenn der Vater invalid ist, ist das item ein übergeordnetes Objekt
+		// -> Jahr.. also schwarz
+		if (!index.parent().isValid())
+			return Qt::black;
+
+		unsigned int companyCount = dataHandler->weekCompanyEntryCount(item->year(), item->week());
+		unsigned int schoolCount = dataHandler->weekSchoolEntryCount(item->year(), item->week());
+
+		if (companyCount > 0 && schoolCount > 0)
+			return Qt::black;
+		else if (companyCount > 0 || schoolCount > 0)
+			return QColor(255,163,0);
+		else
+			return Qt::red;
 	}
 	else
 		return item->data(index.column());
