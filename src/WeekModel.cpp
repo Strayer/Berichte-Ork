@@ -71,9 +71,11 @@ int WeekModel::columnCount(const QModelIndex &parent) const
 
 QVariant WeekModel::data(const QModelIndex &index, int role) const
 {
+	// Wenn der Index fehlerhaft ist (oder das root item) machen wir nichts
 	if (!index.isValid())
 		return QVariant();
 
+	// Wir wollen nur auf bestimmte Rollen reagieren
 	if (role != Qt::DisplayRole &&
 		role != Qt::EditRole && 
 		role != Qt::ForegroundRole)
@@ -83,40 +85,46 @@ QVariant WeekModel::data(const QModelIndex &index, int role) const
 
 	if (role == Qt::DisplayRole)
 	{
-		// Wenn der Vater invalid ist, ist das item ein übergeordnetes Objekt
-		// -> Jahr
+		// Wenn der Vater invalid ist, sind wir im ersten Level des Baums
+		// das Item ist also ein Jahr
 		if (!index.parent().isValid())
 			return QString("%1").arg(item->year());
-		// Wenn das item einen Vater hat ist es eine Kalenderwoche
-		else
-		{
-			unsigned int companyCount = getCachedCompanyCount(item->year(), item->week());
-			unsigned int schoolCount = getCachedSchoolCount(item->year(), item->week());
 
-			if (companyCount > 0 || schoolCount > 0)
-				return QString(tr("KW %1 [%2|%3]")).arg(item->week()).arg(companyCount).arg(schoolCount);
-			else
-				return QString(tr("KW %1")).arg(item->week());
-		}
-	}
-	else if (role = Qt::ForegroundRole)
-	{
-		// Wenn der Vater invalid ist, ist das item ein übergeordnetes Objekt
-		// -> Jahr.. also schwarz
-		if (!index.parent().isValid())
-			return Qt::black;
+		// Wenn der Vater nicht invalid ist, sind wir irgendwo im Baum ab
+		// dem 2. Level
 
+		// Anzahl der Einträge aus dem Cache holen
 		unsigned int companyCount = getCachedCompanyCount(item->year(), item->week());
 		unsigned int schoolCount = getCachedSchoolCount(item->year(), item->week());
 
+		// Wenn keine Einträge vorhanden sind brauchen wir auch keine Zahlen anzeigen
+		if (companyCount > 0 || schoolCount > 0)
+			return QString(tr("KW %1 [%2|%3]")).arg(item->week()).arg(companyCount).arg(schoolCount);
+		else
+			return QString(tr("KW %1")).arg(item->week());
+	}
+	else if (role = Qt::ForegroundRole)
+	{
+		// Wenn der Vater invalid ist, sind wir im ersten Level des Baums
+		// das Item ist also ein Jahr
+		if (!index.parent().isValid())
+			return Qt::black;
+
+		// Anzahl der Einträge aus dem Cache holen
+		unsigned int companyCount = getCachedCompanyCount(item->year(), item->week());
+		unsigned int schoolCount = getCachedSchoolCount(item->year(), item->week());
+
+		// Wenn Schul- und Betriebseinträge vorhanden sind -> schwarz
 		if (companyCount > 0 && schoolCount > 0)
 			return Qt::black;
+		// Wenn Schul- ODER Betriebseinträge vorhanden sind -> orange
 		else if (companyCount > 0 || schoolCount > 0)
 			return QColor(255,163,0);
+		// Wenn weder noch vorhanden ist -> rot
 		else
 			return Qt::red;
 	}
-	else
+	else // Qt::EditRole
 		return item->data(index.column());
 }
 
@@ -125,6 +133,7 @@ Qt::ItemFlags WeekModel::flags(const QModelIndex &index) const
 	if (!index.isValid())
 		return 0;
 
+	// Unsere Einträge sind nur auswählbar
 	return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }
 
