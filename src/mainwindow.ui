@@ -92,7 +92,7 @@ p, li { white-space: pre-wrap; }
         <item>
          <widget class="QPushButton" name="jumpToDateButton">
           <property name="text">
-           <string>Zu Datum X springen...</string>
+           <string>Zu einem Datum springen...</string>
           </property>
          </widget>
         </item>

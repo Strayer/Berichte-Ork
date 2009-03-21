@@ -383,15 +383,30 @@ void BerichteOrk::on_jumpToDateButton_clicked()
 {
 	// Anzuzeigender Dialog
 	QDialog *dlg = new QDialog(this);
+	dlg->setWindowTitle("Zu einem Datum springen");
+	dlg->setModal(false);
+
+	// Kalender
+	QCalendarWidget* calendar = new QCalendarWidget();
+	calendar->setMinimumDate(dataHandler.getStartDate());
+	calendar->setMaximumDate(dataHandler.getEndDate());
+	calendar->setSelectedDate(QDate::currentDate());
+	calendar->setFirstDayOfWeek(Qt::Monday);
 
 	// Label Datum
 	QLabel* label = new QLabel(tr("Datum:"));
 	
-	// Eingabefeld Fach
+	// Eingabefeld Datum
 	QDateEdit* dateEdit = new QDateEdit();
 	dateEdit->setMinimumDate(dataHandler.getStartDate());
 	dateEdit->setMaximumDate(dataHandler.getEndDate());
 	dateEdit->setDate(QDate::currentDate());
+
+	// Eingabefeld und Kalender müssen synchron bleiben
+	connect(calendar, SIGNAL(clicked(const QDate&)),
+		dateEdit, SLOT(setDate(const QDate&)));
+	connect(dateEdit, SIGNAL(dateChanged(const QDate&)),
+		calendar, SLOT(setSelectedDate(const QDate&)));
 
 	// ButtonBox
 	QDialogButtonBox* box = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
@@ -405,8 +420,10 @@ void BerichteOrk::on_jumpToDateButton_clicked()
 
 	// Haupt-Layout
 	QVBoxLayout* mLayout = new QVBoxLayout;
+	mLayout->addWidget(calendar);
 	mLayout->addLayout(layout);
 	mLayout->addWidget(box);
+	mLayout->setSizeConstraint(QLayout::SetFixedSize);
 	dlg->setLayout(mLayout);
 
 	// Dialog anzeigen
