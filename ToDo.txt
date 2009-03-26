@@ -1,10 +1,8 @@
 High Prio:
-- Farben in der Jahresliste aktualisieren (dataChanged)
 - PDF Export
 
 Medium Prio:
 - Recent Files
-- Kalenderding
 
 Low Prio:
 - Copy & Paste der Einträge?
