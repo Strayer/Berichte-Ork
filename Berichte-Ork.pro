@@ -7,17 +7,18 @@ TARGET = Berichte-Ork
 DEPENDPATH += . src
 INCLUDEPATH += .
 
-QT += sql
+QT += sql network xml
 
 # Input
-HEADERS += src/newDatabaseDialog.h src/BerichteOrk.h src/DataHandler.h src/WeekModel.h src/WeekModelItem.h 
-FORMS += src/mainwindow.ui src/newDatabaseDialog.ui
+HEADERS += src/newDatabaseDialog.h src/BerichteOrk.h src/DataHandler.h src/WeekModel.h src/WeekModelItem.h src/pdfExportDialog.h
+FORMS += src/mainwindow.ui src/newDatabaseDialog.ui src/pdfExport.ui
 SOURCES += src/newDatabaseDialog.cpp \
            src/BerichteOrk.cpp \
            src/DataHandler.cpp \
            src/main.cpp \
 		   src/WeekModel.cpp \
-		   src/WeekModelItem.cpp
+		   src/WeekModelItem.cpp \
+		   src/pdfExportDialog.cpp
 RESOURCES += src/resources.qrc
 
 RC_FILE = src/berichteork.rc

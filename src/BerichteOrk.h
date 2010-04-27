@@ -2,6 +2,7 @@
 #define BERICHTEORK_H
 
 #include <QMainWindow>
+#include <QTableView>
 
 #include "ui_mainwindow.h"
 #include "DataHandler.h"
@@ -24,6 +25,7 @@ private:
 	void initializeGui();
 	void disableAllElements(bool toggle);
 	void openFile(QString filePath);
+	void removeSelectedFromTableView(QTableView* view);
 	DataHandler dataHandler;
 	QSqlTableModel* schuleModel;
 	QSqlTableModel* betriebModel;
@@ -43,6 +45,7 @@ private slots:
 	void on_actionOpen_triggered();
 	void on_actionNew_triggered();
 	void on_jumpToDateButton_clicked();
+	void on_actionGeneratePDF_triggered();
 
 };
 

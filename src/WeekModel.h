@@ -32,7 +32,7 @@ public:
 	void updateCounterCache(int year, int week);
 
 private:
-	void setDateRange(QDate &startDate, QDate &endDate);
+	void setDateRange(QDate startDate, QDate endDate);
 
 	unsigned int getCachedCompanyCount(int year, int week) const;
 	unsigned int getCachedSchoolCount(int year, int week) const;

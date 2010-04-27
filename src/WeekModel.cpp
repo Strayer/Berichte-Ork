@@ -145,7 +145,7 @@ QVariant WeekModel::headerData(int section, Qt::Orientation orientation, int rol
 	return QVariant();
 }
 
-void WeekModel::setDateRange(QDate &startDate, QDate &endDate)
+void WeekModel::setDateRange(QDate startDate, QDate endDate)
 {
 	// Jahre und Kalenderwochen aus dem Datum holen
 	int startYear, endYear, currFirstWeek, currLastWeek;

@@ -2,7 +2,6 @@
 #define NEWDATABASEDIALOG_H
 
 #include <QDialog>
-#include <QtSql>
 
 #include "ui_newDatabaseDialog.h"
 

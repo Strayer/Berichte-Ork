@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="images" >
+    <file>images/ajax-loader.gif</file>
+    <file>images/arrow-right.png</file>
     <file>images/accessories-text-editor.png</file>
     <file>images/application-pdf.png</file>
     <file>images/document-new.png</file>

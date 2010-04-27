@@ -2,6 +2,11 @@
 
 #include "BerichteOrk.h"
 #include "newDatabaseDialog.h"
+#include "pdfExportDialog.h"
+
+#include <QtCore/QList>
+#include <QtCore/QPersistentModelIndex>
+#include <QtCore/QAbstractItemModel>
 
 BerichteOrk::BerichteOrk(QWidget *parent) : QMainWindow(parent)
 {
@@ -9,7 +14,9 @@ BerichteOrk::BerichteOrk(QWidget *parent) : QMainWindow(parent)
 
 	// Tabellenheader einstellen
 	schuleView->verticalHeader()->hide();
+	schuleView->verticalHeader()->setDefaultSectionSize(fontMetrics().lineSpacing() + 8);
 	betriebView->verticalHeader()->hide();
+	betriebView->verticalHeader()->setDefaultSectionSize(fontMetrics().lineSpacing() + 8);
 	disableAllElements(true);
 
 	// Models mit NULL belegen
@@ -113,30 +120,14 @@ void BerichteOrk::wochenTree_itemSelectionChanged()
 			betriebModel->select();
 
 			schuleView->resizeColumnsToContents();
-			schuleView->resizeRowsToContents();
 			schuleView->horizontalHeader()->setStretchLastSection(true);
 
 			betriebView->resizeColumnsToContents();
-			betriebView->resizeRowsToContents();
 			betriebView->horizontalHeader()->setStretchLastSection(true);
 
-			// Als erstes den Wochentag vom 1.1. ermitteln
-			int yearStartDay = QDate(selectedYear, 1, 1).dayOfWeek();
-
-			// Tage vom 1.1. bis zu dieser Woche ausrechnen
-			int daysToWeek = ((selectedWeek - 1) * 7) - yearStartDay + 1;
-
-			// Startdatum ermitteln
-			QDate startDate = QDate(selectedYear, 1, 1).addDays(daysToWeek);
-
-			// Enddatum ermitteln
-			QDate endDate = startDate.addDays(6);
-
 			// Label aktualisieren
-			selectedWeekLabel->setText(QString("KW %1, %2 - %3")
-				.arg(selectedWeek)
-				.arg(startDate.toString(Qt::SystemLocaleShortDate))
-				.arg(endDate.toString(Qt::SystemLocaleShortDate)));
+			selectedWeekLabel->setText(QString("KW %1")
+				.arg(selectedWeek));
 		}
 		// Wenn ein Jahr ausgewählt wurde Elemente deaktivieren
 		else
@@ -160,24 +151,42 @@ void BerichteOrk::wochenTree_itemSelectionChanged()
 		disableAllElements(false);
 }
 
+void BerichteOrk::removeSelectedFromTableView(QTableView* view)
+{
+	QAbstractItemModel* model = view->model();
+
+	QModelIndexList tmp = view->selectionModel()->selectedIndexes();
+	QList<QPersistentModelIndex> indexes;
+
+	for (int i = 0; i < tmp.size(); i++)
+	{
+		qDebug() << tmp.at(i).internalId() << tmp.at(i).isValid() << tmp.at(i).row();
+		indexes.append(tmp.at(i));
+		qDebug() << tmp.at(i).internalId() << tmp.at(i).isValid();
+	}
+	qDebug() << "";
+	for (int i = 0; i < indexes.size(); i++)
+	{
+		qDebug() << indexes.at(i).internalId() << indexes.at(i).isValid() << indexes.at(i).row();
+		model->removeRow(indexes.at(i).row());
+		qDebug() << indexes.at(i).internalId() << indexes.at(i).isValid();
+	}
+
+	view->resizeColumnsToContents();
+	view->resizeRowsToContents();
+	view->horizontalHeader()->setStretchLastSection(true);
+}
+
 void BerichteOrk::on_removeBetriebButton_clicked()
 {
-	const QModelIndexList tmp = betriebView->selectionModel()->selectedIndexes();
-
-	foreach (QModelIndex index, tmp)
-	{
-		betriebModel->removeRow(index.row());
-	}
+	removeSelectedFromTableView(betriebView);
+	weekModel->weekChanged(selectedYear, selectedWeek);
 }
 
 void BerichteOrk::on_removeSchuleButton_clicked()
 {
-	const QModelIndexList tmp = schuleView->selectionModel()->selectedIndexes();
-
-	foreach (QModelIndex index, tmp)
-	{
-		schuleModel->removeRow(index.row());
-	}
+	removeSelectedFromTableView(schuleView);
+	weekModel->weekChanged(selectedYear, selectedWeek);
 }
 
 void BerichteOrk::on_addBetriebButton_clicked()
@@ -446,4 +455,11 @@ void BerichteOrk::on_jumpToDateButton_clicked()
 	}
 
 	delete dlg;
+}
+
+void BerichteOrk::on_actionGeneratePDF_triggered()
+{
+	PdfExportDialog *dialog = new PdfExportDialog(this, &dataHandler);
+
+	dialog->exec();
 }
