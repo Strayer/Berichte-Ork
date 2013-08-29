@@ -1,9 +1,13 @@
-\batchmode
+% \batchmode
 
-\font\standard=Helvetica at 10pt
-\font\standardSmall=Helvetica at 8pt
-\font\sykl=Wingdings3 at 11pt
-\font\sygr=Wingdings3 at 13pt
+\hoffset=-0.5in
+\voffset=-1in
+
+\font\standard="Arial" at 10pt
+\font\standardSmall="Arial" at 8pt
+\font\sykl="Wingdings 3" at 11pt
+\font\sygr="Wingdings 3" at 13pt
+
 
 \vsize = 220mm
 \hsize = 150mm
@@ -13,10 +17,8 @@
 
 \def\bild #1{%
 	\hbox to0pt{\vbox to0pt{%
-	\special{save currentpoint translate}%
-	\special{.25 .25 scale}
-	\special{(#1) viewJPEG}%
-	\special{restore}\vss}\hss%
+	\special{pdf:image scale 0.25 (#1)}
+	\vss}\hss%
 }}
 
 \def\item #1\par{\setbox1=\hbox{\sykl\char182\hskip3dd}\setbox2=\hbox{\hskip\wd1\sygr\char234\hskip3dd}
