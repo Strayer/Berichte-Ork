@@ -90,7 +90,7 @@ void PdfExportDialog::on_generateButton_clicked()
 	if (!texTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
 	{
 		loadingPDF = false;
-		QMessageBox::critical(this, "Fehler beim Öffnen des TEX-Templates!",
+        QMessageBox::critical(this, tr("Fehler beim Öffnen des TEX-Templates!"),
 			tr("Das TEX-Template %1 konnte nicht geöffnet werden!").arg(texPath->text()));
 		close();
 		return;

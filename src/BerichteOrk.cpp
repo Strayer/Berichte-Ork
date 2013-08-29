@@ -161,7 +161,7 @@ void BerichteOrk::wochenTree_itemSelectionChanged()
 	if (disableElements)
 	{
 		// Label aktualisieren
-		selectedWeekLabel->setText("Keine Woche gewählt...");
+        selectedWeekLabel->setText(tr("Keine Woche gewählt..."));
 
 		// Filter setzen damit die Views leer sind
 		schuleModel->setFilter("1 = 0");
@@ -413,7 +413,7 @@ void BerichteOrk::on_jumpToDateButton_clicked()
 {
 	// Anzuzeigender Dialog
 	QDialog *dlg = new QDialog(this);
-	dlg->setWindowTitle("Zu einem Datum springen");
+    dlg->setWindowTitle(tr("Zu einem Datum springen"));
 	dlg->setModal(false);
 
 	// Kalender
