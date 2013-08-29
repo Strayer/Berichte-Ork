@@ -34,11 +34,11 @@
 
 void escapeForTEX(QString &str)
 {
-	str.replace(QString("\\"), QString(""));
-	str.replace(QString("{"), QString(""));
-	str.replace(QString("}"), QString(""));
-	str.replace(QString("^"), QString(""));
-	str.replace(QString("~"), QString(""));
+    str.replace(QString("\\"), QString("$\\backslash$"));
+    str.replace(QString("{"), QString("$\\{$"));
+    str.replace(QString("}"), QString("$\\}$"));
+    str.replace(QString("^"), QString("{\\char`\\^}"));
+    str.replace(QString("~"), QString("{\\char`\\~}"));
 	str.replace(QString("$"), QString("\\$"));
 	str.replace(QString("%"), QString("\\%"));
 	str.replace(QString("&"), QString("\\&"));
