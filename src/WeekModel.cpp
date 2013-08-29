@@ -103,7 +103,7 @@ QVariant WeekModel::data(const QModelIndex &index, int role) const
 		else
 			return QString(tr("KW %1")).arg(item->week());
 	}
-	else if (role = Qt::ForegroundRole)
+    else if (role == Qt::ForegroundRole)
 	{
 		// Wenn der Vater invalid ist, sind wir im ersten Level des Baums
 		// das Item ist also ein Jahr
