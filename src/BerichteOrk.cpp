@@ -440,7 +440,7 @@ void BerichteOrk::on_jumpToDateButton_clicked()
 
 	if (dlg->result() == QDialog::Accepted)
 	{
-		int year = NULL;
+        int year = 0;
 		int weekNumber = dateEdit->date().weekNumber(&year);
 
 		// QModelIndex aus dem Model holen
