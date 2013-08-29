@@ -7,10 +7,10 @@
 
 bool DataHandler::openDatabase(QString file, bool removeBeforeOpen)
 {
-	// Ggfs. alte DB schlieﬂen
+	// Ggfs. alte DB schlie√üen
 	closeDatabase();
 
-	// Angegebene Datei lˆschen
+	// Angegebene Datei l√∂schen
 	if (removeBeforeOpen && QFile::exists(file))
 		qDebug() << QFile::remove(file);
 	
@@ -29,7 +29,7 @@ bool DataHandler::openDatabase(QString file, bool removeBeforeOpen)
 
 void DataHandler::closeDatabase()
 {
-	// Nur schlieﬂen wenn auch etwas geˆffnet ist
+	// Nur schlie√üen wenn auch etwas ge√∂ffnet ist
 	if (QSqlDatabase::contains(QSqlDatabase::defaultConnection))
 	{
 		QSqlDatabase::database().close();
@@ -97,7 +97,7 @@ QDate DataHandler::getEndDate()
 
 bool DataHandler::openNewDatabase(QString file, QDate startDate, QDate endDate)
 {
-	// Neue DB ˆffnen
+	// Neue DB √∂ffnen
 	if (!openDatabase(file, true))
 		return false;
 

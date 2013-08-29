@@ -23,13 +23,13 @@ BerichteOrk::BerichteOrk(QWidget *parent) : QMainWindow(parent)
 	schuleModel = NULL;
 	betriebModel = NULL;
 
-	// Zum Datum X springen geht erst nachdem was ge�ffnet wurde
+	// Zum Datum X springen geht erst nachdem was geÃ¶ffnet wurde
 	jumpToDateButton->setEnabled(false);
 }
 
 BerichteOrk::~BerichteOrk()
 {
-	// Erst Models entfernen, dann Datenbank schlie�en
+	// Erst Models entfernen, dann Datenbank schlieÃen
 	// sonst greifen die Models noch auf die DB zu
 	removeModels();
 	dataHandler.closeDatabase();
@@ -100,7 +100,7 @@ void BerichteOrk::wochenTree_itemSelectionChanged()
 	bool disableElements = false;
 
 	// Dieses Signal wird auch von clear() aufgerugen,
-	// also erstmal pr�fen ob �berhaupt was im TreeWidget drin ist
+	// also erstmal prÃŒfen ob ÃŒberhaupt was im TreeWidget drin ist
 	QModelIndexList selection = wochenTree->selectionModel()->selectedIndexes();
 
 	if (!selection.isEmpty())
@@ -108,7 +108,7 @@ void BerichteOrk::wochenTree_itemSelectionChanged()
 		// Nur in der 2. Ebene
 		if (selection.at(0).parent().isValid())
 		{
-			// Gew�hlte Daten ermitteln
+			// GewÃ€hlte Daten ermitteln
 			WeekModelItem* item = static_cast<WeekModelItem*>(selection.at(0).internalPointer());
 			selectedYear = item->year();
 			selectedWeek = item->week();
@@ -129,7 +129,7 @@ void BerichteOrk::wochenTree_itemSelectionChanged()
 			selectedWeekLabel->setText(QString("KW %1")
 				.arg(selectedWeek));
 		}
-		// Wenn ein Jahr ausgew�hlt wurde Elemente deaktivieren
+		// Wenn ein Jahr ausgewÃ€hlt wurde Elemente deaktivieren
 		else
 			disableElements = true;
 	}
@@ -140,7 +140,7 @@ void BerichteOrk::wochenTree_itemSelectionChanged()
 	if (disableElements)
 	{
 		// Label aktualisieren
-		selectedWeekLabel->setText("Keine Woche gew�hlt...");
+		selectedWeekLabel->setText("Keine Woche gewÃ€hlt...");
 
 		// Filter setzen damit die Views leer sind
 		schuleModel->setFilter("1 = 0");
@@ -325,18 +325,18 @@ void BerichteOrk::schuleModel_beforeInsert(QSqlRecord &record)
 
 void BerichteOrk::on_actionOpen_triggered()
 {
-	// Datenbank �ffnen
+	// Datenbank Ã¶ffnen
 	QString fileName = QFileDialog::getOpenFileName(this,
-		tr("Berichtsheft �ffnen"),
+		tr("Berichtsheft Ã¶ffnen"),
 		".",
 		tr("Berichtsheft (*.orkreport)"));
 	
 	if (!fileName.isNull())
 	{
-		// Bestehende Models l�schen
+		// Bestehende Models lÃ¶schen
 		removeModels();
 
-		// Datenbank �ffnen
+		// Datenbank Ã¶ffnen
 		dataHandler.openDatabase(fileName);
 
 		// GUI neu konfigurieren
@@ -351,10 +351,10 @@ void BerichteOrk::on_actionNew_triggered()
 
 	if (dlg.result() == QDialog::Accepted)
 	{
-		// Bestehende Models l�schen
+		// Bestehende Models lÃ¶schen
 		removeModels();
 
-		// Neue Datenbank erstellen und �ffnen
+		// Neue Datenbank erstellen und Ã¶ffnen
 		dataHandler.openNewDatabase(dlg.filePathEdit->text(), dlg.dateStart->date(), dlg.dateEnd->date());
 
 		// GUI neu konfigurieren
@@ -411,7 +411,7 @@ void BerichteOrk::on_jumpToDateButton_clicked()
 	dateEdit->setMaximumDate(dataHandler.getEndDate());
 	dateEdit->setDate(QDate::currentDate());
 
-	// Eingabefeld und Kalender m�ssen synchron bleiben
+	// Eingabefeld und Kalender mÃŒssen synchron bleiben
 	connect(calendar, SIGNAL(clicked(const QDate&)),
 		dateEdit, SLOT(setDate(const QDate&)));
 	connect(dateEdit, SIGNAL(dateChanged(const QDate&)),
@@ -447,7 +447,7 @@ void BerichteOrk::on_jumpToDateButton_clicked()
 		QModelIndex index = weekModel->week(year, weekNumber);
 
 		// Gibt es das Datum im Index? Nur zur Sicherheit...
-		// das Eingabefeld l�sst nichts anderes zu
+		// das Eingabefeld lÃ€sst nichts anderes zu
 		if (index.isValid())
 		{
 			wochenTree->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);

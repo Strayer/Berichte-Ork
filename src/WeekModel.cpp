@@ -93,11 +93,11 @@ QVariant WeekModel::data(const QModelIndex &index, int role) const
 		// Wenn der Vater nicht invalid ist, sind wir irgendwo im Baum ab
 		// dem 2. Level
 
-		// Anzahl der Einträge aus dem Cache holen
+		// Anzahl der EintrÃ¤ge aus dem Cache holen
 		unsigned int companyCount = getCachedCompanyCount(item->year(), item->week());
 		unsigned int schoolCount = getCachedSchoolCount(item->year(), item->week());
 
-		// Wenn keine Einträge vorhanden sind brauchen wir auch keine Zahlen anzeigen
+		// Wenn keine EintrÃ¤ge vorhanden sind brauchen wir auch keine Zahlen anzeigen
 		if (companyCount > 0 || schoolCount > 0)
 			return QString(tr("KW %1 [%2|%3]")).arg(item->week()).arg(companyCount).arg(schoolCount);
 		else
@@ -110,14 +110,14 @@ QVariant WeekModel::data(const QModelIndex &index, int role) const
 		if (!index.parent().isValid())
 			return Qt::black;
 
-		// Anzahl der Einträge aus dem Cache holen
+		// Anzahl der EintrÃ¤ge aus dem Cache holen
 		unsigned int companyCount = getCachedCompanyCount(item->year(), item->week());
 		unsigned int schoolCount = getCachedSchoolCount(item->year(), item->week());
 
-		// Wenn Schul- und Betriebseinträge vorhanden sind -> schwarz
+		// Wenn Schul- und BetriebseintrÃ¤ge vorhanden sind -> schwarz
 		if (companyCount > 0 && schoolCount > 0)
 			return Qt::black;
-		// Wenn Schul- ODER Betriebseinträge vorhanden sind -> orange
+		// Wenn Schul- ODER BetriebseintrÃ¤ge vorhanden sind -> orange
 		else if (companyCount > 0 || schoolCount > 0)
 			return QColor(255,163,0);
 		// Wenn weder noch vorhanden ist -> rot
@@ -133,7 +133,7 @@ Qt::ItemFlags WeekModel::flags(const QModelIndex &index) const
 	if (!index.isValid())
 		return 0;
 
-	// Unsere Einträge sind nur auswählbar
+	// Unsere EintrÃ¤ge sind nur auswÃ¤hlbar
 	return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }
 
@@ -163,7 +163,7 @@ void WeekModel::setDateRange(QDate startDate, QDate endDate)
 			currLastWeek = endWeek;
 		else
 		{
-			// Wenn das aktuelle Jahr mit einem Donnerstag anfängt
+			// Wenn das aktuelle Jahr mit einem Donnerstag anfÃ¤ngt
 			// oder endet -> 53 KWs. Sonst 52 KWs.
 			if (QDate(i, 1, 1).dayOfWeek() == Qt::Thursday ||
 				QDate(i, 12, 31).dayOfWeek() == Qt::Thursday)
@@ -172,11 +172,11 @@ void WeekModel::setDateRange(QDate startDate, QDate endDate)
 				currLastWeek = 52;
 		}
 
-		// WeekModelItem für das Jahr erstellen
+		// WeekModelItem fÃ¼r das Jahr erstellen
 		WeekModelItem *newYearItem = new WeekModelItem(i, 0, rootItem);
 		rootItem->appendChild(newYearItem);
 
-		// Einzelne Wochen zur Liste hinzufügen
+		// Einzelne Wochen zur Liste hinzufÃ¼gen
 		for (int j = currFirstWeek; j <= currLastWeek; j++)
 		{
 			WeekModelItem *newWeekItem = new WeekModelItem(i, j, newYearItem);
@@ -197,7 +197,7 @@ QModelIndex WeekModel::week(int year, int week)
 	// Existiert ein Element mit diesem Index?
 	if (weekMap.contains(index))
 	{
-		// QModelIndex erstellen und zurückgeben
+		// QModelIndex erstellen und zurÃ¼ckgeben
 		return createIndex(weekMap.value(index)->row(), 0, weekMap.value(index));
 	}
 	else

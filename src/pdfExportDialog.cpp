@@ -63,19 +63,19 @@ void PdfExportDialog::on_generateButton_clicked()
 	loadingPDF = true;
 	toggleLoadingGif(true);
 
-	// Template öffnen
+	// Template Ã¶ffnen
 	QFile texTemplateFile(texPath->text());
 
 	if (!texTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
 	{
 		loadingPDF = false;
-		QMessageBox::critical(this, "Fehler beim Öffnen des TEX-Templates!",
-			tr("Das TEX-Template %1 konnte nicht geöffnet werden!").arg(texPath->text()));
+		QMessageBox::critical(this, "Fehler beim Ã–ffnen des TEX-Templates!",
+			tr("Das TEX-Template %1 konnte nicht geÃ¶ffnet werden!").arg(texPath->text()));
 		close();
 		return;
 	}
 
-	// Daten auslesen und Datei wieder schließen
+	// Daten auslesen und Datei wieder schlieÃŸen
 	QByteArray texTemplate = texTemplateFile.readAll();
 	texTemplateFile.close();
 
@@ -106,7 +106,7 @@ void PdfExportDialog::on_generateButton_clicked()
 			currLastWeek = endWeek;
 		else
 		{
-			// Wenn das aktuelle Jahr mit einem Donnerstag anfängt
+			// Wenn das aktuelle Jahr mit einem Donnerstag anfÃ¤ngt
 			// oder endet -> 53 KWs. Sonst 52 KWs.
 			if (QDate(i, 1, 1).dayOfWeek() == Qt::Thursday ||
 				QDate(i, 12, 31).dayOfWeek() == Qt::Thursday)
@@ -152,7 +152,7 @@ void PdfExportDialog::on_generateButton_clicked()
 						oldSubject = subject;
 					}
 
-					// Item einfügen
+					// Item einfÃ¼gen
 					escapeForTEX(text);
 					generatedContent.append(QString("\\item %2\n\n").arg(text));
 				}
@@ -175,7 +175,7 @@ void PdfExportDialog::on_generateButton_clicked()
 						oldSubject = subject;
 					}
 
-					// Item einfügen
+					// Item einfÃ¼gen
 					escapeForTEX(text);
 					generatedContent.append(QString("\\item %2\n\n").arg(text));
 				}
@@ -190,7 +190,7 @@ void PdfExportDialog::on_generateButton_clicked()
 		}
 	}
 
-	// Generierten Content einfügen
+	// Generierten Content einfÃ¼gen
 	texTemplate.replace(QString("___content___"), generatedContent);
 
 	QFile debug("E:\\tmp\\debug.tex");
@@ -242,7 +242,7 @@ void PdfExportDialog::enableAllWidgets(bool toggle)
 
 void PdfExportDialog::closeEvent(QCloseEvent *event)
 {
-	// Während die PDF geladen wird sollte das Fenster nicht geschlossen werden
+	// WÃ¤hrend die PDF geladen wird sollte das Fenster nicht geschlossen werden
 	if (loadingPDF)
 		event->ignore();
 }
@@ -328,7 +328,7 @@ void PdfExportDialog::httpRequestFinished(int id, bool error)
 
 	/*
 	if (QMessageBox::question(this, "PDF erfolgreich generiert!",
-		tr("Die PDF-Datei %1 wurde erfolgreich generiert!<br /><br />Soll die Datei jetzt geöffnet werden?").arg(pdfOutFile.fileName()),
+		tr("Die PDF-Datei %1 wurde erfolgreich generiert!<br /><br />Soll die Datei jetzt geÃ¶ffnet werden?").arg(pdfOutFile.fileName()),
 		QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::Yes)
 		QMessageBox::information(this, "Kay", "Kay");
 	*/

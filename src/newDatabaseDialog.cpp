@@ -11,7 +11,7 @@ NewDatabaseDialog::NewDatabaseDialog(QWidget *parent) : QDialog(parent)
 void NewDatabaseDialog::on_filePathButton_clicked()
 {
 	QString filename = QFileDialog::getSaveFileName(this,
-		tr("Speicherort w‰hlen"),
+		tr("Speicherort w√§hlen"),
 		".",
 		tr("Berichtsheft (*.orkreport)"));
 	filePathEdit->setText(filename);
@@ -31,7 +31,7 @@ void NewDatabaseDialog::accept()
 	{
 		QMessageBox::critical(this,
 			tr("Fehler beim Erstellen des Berichthefts!"),
-			tr("Es muss ein Pfad zum Speichern des Berichtshefts ausgew‰hlt werden!"));
+			tr("Es muss ein Pfad zum Speichern des Berichtshefts ausgew√§hlt werden!"));
 		return;
 	}
 
