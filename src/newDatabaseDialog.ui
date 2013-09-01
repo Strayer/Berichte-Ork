@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>375</width>
-    <height>129</height>
+    <width>451</width>
+    <height>166</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -56,12 +56,6 @@
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
        </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="readOnly">
-        <bool>true</bool>
-       </property>
       </widget>
      </item>
      <item row="0" column="2">
@@ -86,7 +80,14 @@
       </widget>
      </item>
      <item row="1" column="1" colspan="2">
-      <widget class="QDateEdit" name="dateStart"/>
+      <widget class="QDateEdit" name="dateStart">
+       <property name="displayFormat">
+        <string>dd.MM.yyyy</string>
+       </property>
+       <property name="calendarPopup">
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
      <item row="2" column="0">
       <widget class="QLabel" name="label_2">
@@ -99,7 +100,14 @@
       </widget>
      </item>
      <item row="2" column="1" colspan="2">
-      <widget class="QDateEdit" name="dateEnd"/>
+      <widget class="QDateEdit" name="dateEnd">
+       <property name="displayFormat">
+        <string>dd.MM.yyyy</string>
+       </property>
+       <property name="calendarPopup">
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -133,8 +141,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>227</x>
-     <y>116</y>
+     <x>233</x>
+     <y>160</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -149,8 +157,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>295</x>
-     <y>122</y>
+     <x>301</x>
+     <y>160</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>

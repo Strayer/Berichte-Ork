@@ -27,6 +27,9 @@ NewDatabaseDialog::NewDatabaseDialog(QWidget *parent) : QDialog(parent)
 {
 	setupUi(this);
 	setFixedHeight(sizeHint().height());
+
+    dateStart->setDate(QDate::currentDate());
+    dateEnd->setDate(QDate::currentDate().addYears(3).addDays(-1));
 }
 
 void NewDatabaseDialog::on_filePathButton_clicked()
