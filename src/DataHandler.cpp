@@ -26,6 +26,11 @@
 #include <QtSql>
 #include <QDate>
 
+DataHandler::DataHandler()
+{
+    databaseOpen = false;
+}
+
 bool DataHandler::openDatabase(QString file, bool removeBeforeOpen)
 {
 	// Ggfs. alte DB schließen
@@ -45,6 +50,8 @@ bool DataHandler::openDatabase(QString file, bool removeBeforeOpen)
 		return false;
 	}
 
+    databaseOpen = true;
+
 	return true;
 }
 
@@ -56,6 +63,8 @@ void DataHandler::closeDatabase()
 		QSqlDatabase::database().close();
 		QSqlDatabase::removeDatabase(QSqlDatabase::defaultConnection);
 	}
+
+    databaseOpen = false;
 }
 
 unsigned int DataHandler::weekCompanyEntryCount(int year, int week)
@@ -89,14 +98,18 @@ unsigned int DataHandler::weekSchoolEntryCount(int year, int week)
 	else
 		return 0;
 }
+bool DataHandler::isDatabaseOpen() const
+{
+    return databaseOpen;
+}
 
 QDate DataHandler::getStartDate()
 {
-	QSqlQuery query;
-	query.exec("SELECT value FROM settings WHERE key = 'startDate'");
-	query.next();
+    QSqlQuery query;
+    query.exec("SELECT value FROM settings WHERE key = 'startDate'");
+    query.next();
 
-	int year = query.value(0).toString().left(4).toInt();
+    int year = query.value(0).toString().left(4).toInt();
 	int month = query.value(0).toString().mid(4, 2).toInt();
 	int day = query.value(0).toString().right(2).toInt();
 

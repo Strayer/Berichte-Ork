@@ -208,6 +208,9 @@ p, li { white-space: pre-wrap; }
    <addaction name="actionBeenden"/>
   </widget>
   <action name="actionGeneratePDF">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="resources.qrc">
      <normaloff>:/images/images/application-pdf.png</normaloff>:/images/images/application-pdf.png</iconset>

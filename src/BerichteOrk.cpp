@@ -387,7 +387,9 @@ void BerichteOrk::initializeGui()
 {
 	// Ggfs. Models und Views initialisieren
 	initializeModels();
-	initializeViews();
+    initializeViews();
+
+    actionGeneratePDF->setEnabled(dataHandler.isDatabaseOpen());
 
 	// Datum suchen erlauben
 	jumpToDateButton->setEnabled(true);

@@ -30,13 +30,13 @@ class QString;
 class DataHandler
 {
 public:
+    DataHandler();
+
 	bool openDatabase(QString file, bool removeBeforeOpen = false);
 	bool openNewDatabase(QString file, QDate startDate, QDate endDate);
 	void closeDatabase();
 	QDate getStartDate();
 	QDate getEndDate();
-	void setStartDate(QDate date);
-	void setEndDate(QDate date);
 	unsigned int weekCompanyEntryCount(int year, int week);
 	unsigned int weekSchoolEntryCount(int year, int week);
 
@@ -48,6 +48,11 @@ public:
 		EntryYear = 4,
 		EntryType = 5
 	};
+
+    bool isDatabaseOpen() const;
+
+private:
+    bool databaseOpen;
 };
 
 #endif
