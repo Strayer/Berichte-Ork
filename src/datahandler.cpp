@@ -126,7 +126,31 @@ QDate DataHandler::getEndDate()
 	int month = query.value(0).toString().mid(4, 2).toInt();
 	int day = query.value(0).toString().right(2).toInt();
 
-	return QDate(year, month, day);
+    return QDate(year, month, day);
+}
+
+QString DataHandler::getTeXTemplatePath()
+{
+    QSqlQuery query;
+    query.exec("SELECT value FROM settings WHERE key = 'TeXTemplate'");
+    if (query.next())
+        return query.value(0).toString();
+    else
+        return QString();
+}
+
+void DataHandler::setTeXTemplatePath(QString TeXTemplatePath)
+{
+    QSqlQuery query;
+    query.exec("SELECT COUNT(*) FROM settings WHERE key = 'TeXTemplate'");
+
+    if (query.next() && query.value(0).toInt() > 0)
+        query.prepare("UPDATE settings SET value = :path WHERE key = 'TeXTemplate'");
+    else
+        query.prepare("INSERT INTO settings(key, value) VALUES ('TeXTemplate', :path)");
+
+    query.bindValue(":path", TeXTemplatePath);
+    query.exec();
 }
 
 bool DataHandler::openNewDatabase(QString file, QDate startDate, QDate endDate)

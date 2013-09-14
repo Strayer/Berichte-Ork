@@ -24,6 +24,7 @@
 #include "berichteork.h"
 #include "newdatabasedialog.h"
 #include "pdfexportdialog.h"
+#include "settingsdialog.h"
 
 #include <QtCore/QList>
 #include <QtCore/QPersistentModelIndex>
@@ -389,6 +390,7 @@ void BerichteOrk::initializeGui()
 	initializeModels();
     initializeViews();
 
+    actionSettings->setEnabled(dataHandler.isDatabaseOpen());
     actionGeneratePDF->setEnabled(dataHandler.isDatabaseOpen());
 
 	// Datum suchen erlauben
@@ -482,7 +484,31 @@ void BerichteOrk::on_jumpToDateButton_clicked()
 
 void BerichteOrk::on_actionGeneratePDF_triggered()
 {
+    QSettings settings;
+    if (settings.value("xetex_path").toString().isEmpty())
+    {
+        int r = QMessageBox::information(this,
+                                 tr("Achtung"),
+                                 tr("XeTeX wurde noch nicht konfiguriert. Jetzt zu den Einstellungen wechseln?"),
+                                 QMessageBox::Yes | QMessageBox::No,
+                                 QMessageBox::Yes);
+        if (r == QMessageBox::Yes)
+        {
+            on_actionSettings_triggered();
+            return;
+        }
+        else
+            return;
+    }
+
 	PdfExportDialog *dialog = new PdfExportDialog(this, &dataHandler);
 
 	dialog->exec();
+}
+
+void BerichteOrk::on_actionSettings_triggered()
+{
+    SettingsDialog *dialog = new SettingsDialog(this);
+
+    dialog->exec();
 }

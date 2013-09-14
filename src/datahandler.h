@@ -37,6 +37,8 @@ public:
 	void closeDatabase();
 	QDate getStartDate();
 	QDate getEndDate();
+    QString getTeXTemplatePath();
+    void setTeXTemplatePath(QString TeXTemplatePath);
 	unsigned int weekCompanyEntryCount(int year, int week);
 	unsigned int weekSchoolEntryCount(int year, int week);
 

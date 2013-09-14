@@ -67,7 +67,7 @@ private slots:
 	void on_actionNew_triggered();
 	void on_jumpToDateButton_clicked();
 	void on_actionGeneratePDF_triggered();
-
+    void on_actionSettings_triggered();
 };
 
 #endif

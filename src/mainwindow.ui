@@ -205,6 +205,8 @@ p, li { white-space: pre-wrap; }
    <addaction name="separator"/>
    <addaction name="actionGeneratePDF"/>
    <addaction name="separator"/>
+   <addaction name="actionSettings"/>
+   <addaction name="separator"/>
    <addaction name="actionBeenden"/>
   </widget>
   <action name="actionGeneratePDF">
@@ -256,6 +258,14 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="iconText">
     <string>&amp;Neues Berichtsheft</string>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Einstellungen</string>
    </property>
   </action>
  </widget>

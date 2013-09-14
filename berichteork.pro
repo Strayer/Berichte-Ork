@@ -34,11 +34,13 @@ HEADERS += src/newdatabasedialog.h \
            src/datahandler.h \
            src/weekmodel.h \
            src/weekmodelitem.h \
-           src/pdfexportdialog.h
+           src/pdfexportdialog.h \
+           src/settingsdialog.h
 
 FORMS += src/mainwindow.ui \
          src/newdatabasedialog.ui \
-         src/pdfexportdialog.ui
+         src/pdfexportdialog.ui \
+         src/settingsdialog.ui
 
 SOURCES += src/newdatabasedialog.cpp \
            src/berichteork.cpp \
@@ -46,7 +48,8 @@ SOURCES += src/newdatabasedialog.cpp \
            src/main.cpp \
            src/weekmodel.cpp \
            src/weekmodelitem.cpp \
-           src/pdfexportdialog.cpp
+           src/pdfexportdialog.cpp \
+           src/settingsdialog.cpp
 
 RESOURCES += src/resources.qrc
 

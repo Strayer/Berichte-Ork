@@ -14,27 +14,38 @@
  * You should have received a copy of the GNU General Public License
  * along with Berichte-Ork.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (C) Sven Grunewaldt, 2009
+ * Copyright (C) Sven Grunewaldt, 2013
  *
  * Authors: Sven Grunewaldt <strayer@olle-orks.org>
  */
 
-#include <QApplication>
-#include <QIcon>
+#ifndef SETTINGSDIALOG_H
+#define SETTINGSDIALOG_H
 
-#include "berichteork.h"
+#include <QDialog>
 
-int main(int argc, char *argv[])
-{
-	QApplication app(argc, argv);
-
-    QApplication::setOrganizationName("Olle Orks");
-    QApplication::setOrganizationDomain("olle-orks.org");
-    QApplication::setApplicationName("Berichte-Ork");
-    QApplication::setWindowIcon(QIcon(":/images/images/accessories-text-editor.png"));
-
-	BerichteOrk *dialog = new BerichteOrk;
-	dialog->show();
-
-	return app.exec();
+namespace Ui {
+class SettingsDialog;
 }
+
+class SettingsDialog : public QDialog
+{
+    Q_OBJECT
+
+public:
+    explicit SettingsDialog(QWidget *parent = 0);
+    ~SettingsDialog();
+
+private:
+    Ui::SettingsDialog *ui;
+
+    bool xetex_path_valid;
+
+protected slots:
+    void validateXetexPath();
+
+public slots:
+    void accept();
+};
+
+#endif // SETTINGSDIALOG_H
