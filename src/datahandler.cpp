@@ -19,7 +19,7 @@
  * Authors: Sven Grunewaldt <strayer@olle-orks.org>
  */
 
-#include "DataHandler.h"
+#include "datahandler.h"
 
 #include <QString>
 #include <QMessageBox>

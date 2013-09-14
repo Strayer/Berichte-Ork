@@ -19,7 +19,7 @@
  * Authors: Sven Grunewaldt <strayer@olle-orks.org>
  */
 
-#include "pdfExportDialog.h"
+#include "pdfexportdialog.h"
 #include <QFileDialog>
 #include <QDate>
 #include <QFile>

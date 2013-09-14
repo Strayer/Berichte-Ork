@@ -22,7 +22,7 @@
 #include <QApplication>
 #include <QIcon>
 
-#include "BerichteOrk.h"
+#include "berichteork.h"
 
 int main(int argc, char *argv[])
 {

@@ -19,7 +19,7 @@
  * Authors: Sven Grunewaldt <strayer@olle-orks.org>
  */
 
-#include "WeekModel.h"
+#include "weekmodel.h"
 
 WeekModel::WeekModel(DataHandler *dHandler, QObject *parent /* = 0 */)
 	: QAbstractItemModel(parent)

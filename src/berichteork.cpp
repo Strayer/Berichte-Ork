@@ -21,9 +21,9 @@
 
 #include <QtGui>
 
-#include "BerichteOrk.h"
-#include "newDatabaseDialog.h"
-#include "pdfExportDialog.h"
+#include "berichteork.h"
+#include "newdatabasedialog.h"
+#include "pdfexportdialog.h"
 
 #include <QtCore/QList>
 #include <QtCore/QPersistentModelIndex>

@@ -29,15 +29,16 @@ INCLUDEPATH += .
 QT += sql network xml
 
 # Input
-HEADERS += src/newDatabaseDialog.h src/BerichteOrk.h src/DataHandler.h src/WeekModel.h src/WeekModelItem.h src/pdfExportDialog.h
-FORMS += src/mainwindow.ui src/newDatabaseDialog.ui src/pdfExport.ui
-SOURCES += src/newDatabaseDialog.cpp \
-           src/BerichteOrk.cpp \
-           src/DataHandler.cpp \
+HEADERS += src/newdatabasedialog.h src/berichteork.h src/datahandler.h src/weekmodel.h src/weekmodelitem.h src/pdfexportdialog.h
+FORMS += src/mainwindow.ui src/newdatabasedialog.ui \
+    src/pdfexportdialog.ui
+SOURCES += src/newdatabasedialog.cpp \
+           src/berichteork.cpp \
+           src/datahandler.cpp \
            src/main.cpp \
-		   src/WeekModel.cpp \
-		   src/WeekModelItem.cpp \
-		   src/pdfExportDialog.cpp
+                   src/weekmodel.cpp \
+                   src/weekmodelitem.cpp \
+                   src/pdfexportdialog.cpp
 RESOURCES += src/resources.qrc
 
 RC_FILE = src/berichteork.rc

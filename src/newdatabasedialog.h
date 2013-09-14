@@ -19,46 +19,23 @@
  * Authors: Sven Grunewaldt <strayer@olle-orks.org>
  */
 
-#ifndef PDFEXPORTDIALOG_H
-#define PDFEXPORTDIALOG_H
+#ifndef NEWDATABASEDIALOG_H
+#define NEWDATABASEDIALOG_H
 
 #include <QDialog>
-#include <QCloseEvent>
-#include <QMovie>
-#include <QBuffer>
-#include <QHttp>
 
-#include "ui_pdfExport.h"
-#include "DataHandler.h"
+#include "ui_newdatabasedialog.h"
 
-class PdfExportDialog : public QDialog, public Ui::Dialog
+class NewDatabaseDialog : public QDialog, public Ui::newDatabaseDialog
 {
 	Q_OBJECT
 
 public:
-	PdfExportDialog(QWidget *parent = 0, DataHandler *dataHandler = 0);
-
-private:
-	void enableAllWidgets(bool toggle);
-	void toggleLoadingGif(bool toggle);
-	bool loadingPDF;
-	QMovie *loadingMovieGif;
-	QBuffer *httpBuffer;
-	QHttp *http;
-	int httpRequestId;
-	DataHandler *dataHandler;
-
-public slots:
-    void accept();
+	NewDatabaseDialog(QWidget *parent = 0);
 
 private slots:
-    void on_browseButton_clicked();
-	void formFieldChanged();
-	void updateGeneratePdfIcon();
-	void httpRequestFinished(int id, bool error);
-
-protected:
-	void closeEvent(QCloseEvent *event);
+	void on_filePathButton_clicked();
+	void accept();
 };
 
 #endif

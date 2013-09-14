@@ -26,8 +26,8 @@
 #include <QTableView>
 
 #include "ui_mainwindow.h"
-#include "DataHandler.h"
-#include "WeekModel.h"
+#include "datahandler.h"
+#include "weekmodel.h"
 
 class QSqlRecord;
 

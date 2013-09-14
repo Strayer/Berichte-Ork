@@ -19,7 +19,7 @@
  * Authors: Sven Grunewaldt <strayer@olle-orks.org>
  */
 
-#include "WeekModelItem.h"
+#include "weekmodelitem.h"
 
 WeekModelItem::WeekModelItem(int year, int week, WeekModelItem *parent)
 {

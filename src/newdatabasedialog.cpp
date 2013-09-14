@@ -21,7 +21,7 @@
 
 #include <QtGui>
 
-#include "newDatabaseDialog.h"
+#include "newdatabasedialog.h"
 
 NewDatabaseDialog::NewDatabaseDialog(QWidget *parent) : QDialog(parent)
 {

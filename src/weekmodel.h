@@ -27,8 +27,8 @@
 #include <QtCore/QVariant>
 #include <QtCore/QDate>
 
-#include "DataHandler.h"
-#include "WeekModelItem.h"
+#include "datahandler.h"
+#include "weekmodelitem.h"
 
 class WeekModel : public QAbstractItemModel
 {
