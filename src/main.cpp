@@ -20,12 +20,15 @@
  */
 
 #include <QApplication>
+#include <QIcon>
 
 #include "BerichteOrk.h"
 
 int main(int argc, char *argv[])
 {
 	QApplication app(argc, argv);
+
+    QApplication::setWindowIcon(QIcon(":/images/images/accessories-text-editor.png"));
 
 	BerichteOrk *dialog = new BerichteOrk;
 	dialog->show();
