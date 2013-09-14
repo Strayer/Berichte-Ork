@@ -52,7 +52,7 @@ PdfExportDialog::PdfExportDialog(QWidget *parent, DataHandler *dataHandler) : QD
 	setupUi(this);
 	setFixedHeight(sizeHint().height());
 	dateEdit->setDate(QDate::currentDate());
-	generateButton->setEnabled(false);
+    buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
 	loadingPDF = false;
 
 	// Animiertes Gif
@@ -76,9 +76,11 @@ PdfExportDialog::PdfExportDialog(QWidget *parent, DataHandler *dataHandler) : QD
 		this, SLOT(formFieldChanged()));
 	connect(companyName, SIGNAL(textChanged(QString)),
 		this, SLOT(formFieldChanged()));
+
+    buttonBox->button(QDialogButtonBox::Ok)->setText(tr("PDF generieren"));
 }
 
-void PdfExportDialog::on_generateButton_clicked()
+void PdfExportDialog::accept()
 {
 	enableAllWidgets(false);
 	loadingPDF = true;
@@ -231,6 +233,7 @@ void PdfExportDialog::on_generateButton_clicked()
 
 	// HTTP-Request abschicken
 	httpRequestId = http->request(header, postData, httpBuffer);
+    done(Accepted);
 }
 
 void PdfExportDialog::on_browseButton_clicked()
@@ -244,9 +247,9 @@ void PdfExportDialog::formFieldChanged()
 		!traineeName->text().isEmpty() &&
 		!instructorName->text().isEmpty() &&
 		!companyName->text().isEmpty())
-		generateButton->setEnabled(true);
+        buttonBox->button(QDialogButtonBox::Ok)->setEnabled(true);
 	else
-		generateButton->setEnabled(false);
+        buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
 }
 
 void PdfExportDialog::enableAllWidgets(bool toggle)
@@ -256,9 +259,12 @@ void PdfExportDialog::enableAllWidgets(bool toggle)
 	traineeName->setEnabled(toggle);
 	instructorName->setEnabled(toggle);
 	companyName->setEnabled(toggle);
-	cancelButton->setEnabled(toggle);
-	generateButton->setEnabled(toggle);
 	dateEdit->setEnabled(toggle);
+
+    QList<QAbstractButton*> buttons = buttonBox->buttons();
+    QList<QAbstractButton*>::iterator i;
+    for (i = buttons.begin(); i < buttons.end(); i++)
+        (*i)->setEnabled(toggle);
 }
 
 void PdfExportDialog::closeEvent(QCloseEvent *event)
@@ -279,9 +285,9 @@ void PdfExportDialog::toggleLoadingGif(bool toggle)
 void PdfExportDialog::updateGeneratePdfIcon()
 {
 	if (loadingMovieGif->state() == QMovie::Running)
-		generateButton->setIcon(QIcon(loadingMovieGif->currentPixmap()));
+        buttonBox->button(QDialogButtonBox::Ok)->setIcon(QIcon(loadingMovieGif->currentPixmap()));
 	else
-		generateButton->setIcon(QIcon(":/images/images/arrow-right.png"));
+        buttonBox->button(QDialogButtonBox::Ok)->setIcon(QIcon(":/images/images/arrow-right.png"));
 }
 
 void PdfExportDialog::httpRequestFinished(int id, bool error)

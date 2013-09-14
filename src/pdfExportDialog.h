@@ -48,9 +48,11 @@ private:
 	int httpRequestId;
 	DataHandler *dataHandler;
 
+public slots:
+    void accept();
+
 private slots:
-	void on_browseButton_clicked();
-	void on_generateButton_clicked();
+    void on_browseButton_clicked();
 	void formFieldChanged();
 	void updateGeneratePdfIcon();
 	void httpRequestFinished(int id, bool error);
