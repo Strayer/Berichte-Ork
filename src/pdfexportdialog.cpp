@@ -32,7 +32,7 @@
 #include <QtSql>
 
 
-void escapeForTEX(QString &str)
+void escapeForTeX(QString &str)
 {
     str.replace(QString("\\"), QString("$\\backslash$"));
     str.replace(QString("{"), QString("$\\{$"));
@@ -53,7 +53,7 @@ PdfExportDialog::PdfExportDialog(QWidget *parent, DataHandler *dataHandler) : QD
 	setFixedHeight(sizeHint().height());
 	dateEdit->setDate(QDate::currentDate());
     buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
-	loadingPDF = false;
+    loadingPDF = false;
 
 	// Animiertes Gif
 	loadingMovieGif = new QMovie(":/images/images/ajax-loader.gif");
@@ -61,12 +61,6 @@ PdfExportDialog::PdfExportDialog(QWidget *parent, DataHandler *dataHandler) : QD
 		this, SLOT(updateGeneratePdfIcon()));
 	connect(loadingMovieGif, SIGNAL(stateChanged(QMovie::MovieState)),
 		this, SLOT(updateGeneratePdfIcon()));
-
-	// QHTTP und Co
-	httpBuffer = new QBuffer(this);
-	http = new QHttp("phototex.creations.de", QHttp::ConnectionModeHttp, 80, this);
-	connect(http, SIGNAL(requestFinished(int,bool)),
-		this, SLOT(httpRequestFinished(int,bool)));
 
 	connect(texPath, SIGNAL(textChanged(QString)),
 		this, SLOT(formFieldChanged()));
@@ -86,14 +80,19 @@ void PdfExportDialog::accept()
 	loadingPDF = true;
 	toggleLoadingGif(true);
 
+    QString outputFilename = QFileDialog::getSaveFileName(this,
+        tr("Speicherort wählen"),
+        ".",
+        tr("Portable Document Format (*.pdf)"));
+
 	// Template öffnen
 	QFile texTemplateFile(texPath->text());
 
 	if (!texTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
 	{
 		loadingPDF = false;
-        QMessageBox::critical(this, tr("Fehler beim Öffnen des TEX-Templates!"),
-			tr("Das TEX-Template %1 konnte nicht geöffnet werden!").arg(texPath->text()));
+        QMessageBox::critical(this, tr("Fehler beim Öffnen des TeX-Templates!"),
+            tr("Das TeX-Template %1 konnte nicht geöffnet werden!").arg(texPath->text()));
 		close();
 		return;
 	}
@@ -170,13 +169,13 @@ void PdfExportDialog::accept()
 					// Wenn ein neues Subject aufgetaucht ist, neue Unterkategorie aufmachen
 					if (oldSubject != subject)
 					{
-						escapeForTEX(subject);
+                        escapeForTeX(subject);
 						generatedContent.append(QString("\\subCat %1\n\n").arg(subject));
 						oldSubject = subject;
 					}
 
 					// Item einfügen
-					escapeForTEX(text);
+                    escapeForTeX(text);
 					generatedContent.append(QString("\\item %2\n\n").arg(text));
 				}
 				generatedContent.append("}\n\n");
@@ -193,13 +192,13 @@ void PdfExportDialog::accept()
 					// Wenn ein neues Subject aufgetaucht ist, neue Unterkategorie aufmachen
 					if (oldSubject != subject)
 					{
-						escapeForTEX(subject);
+                        escapeForTeX(subject);
 						generatedContent.append(QString("\\subCat %1\n\n").arg(subject));
 						oldSubject = subject;
 					}
 
 					// Item einfügen
-					escapeForTEX(text);
+                    escapeForTeX(text);
 					generatedContent.append(QString("\\item %2\n\n").arg(text));
 				}
 				generatedContent.append("}\n\n\n");
@@ -216,23 +215,50 @@ void PdfExportDialog::accept()
 	// Generierten Content einfügen
 	texTemplate.replace(QString("___content___"), generatedContent);
 
-	QFile debug("E:\\tmp\\debug.tex");
-	debug.open(QIODevice::WriteOnly);
-	debug.write(texTemplate);
-	debug.close();
+    // Create a random temporary directory
+    QDir temporaryDir(QDir::tempPath());
+    QString uuid = QUuid::createUuid().toString();
+    QString temporarySubdir = QString("berichteork_%1").arg(uuid.mid(1, uuid.length() - 2));
+    temporaryDir.mkdir(temporarySubdir);
+    temporaryDir.cd(temporarySubdir);
 
-	// POST-Daten zusammenbauen
-	QByteArray postData = "tex=";
-	postData.append(texTemplate.toPercentEncoding());
+    QFile tmpFile(temporaryDir.filePath("generated.tex"));
+    if (tmpFile.open(QIODevice::WriteOnly)) {
+        tmpFile.write(texTemplate);
+    } else {
+        QMessageBox::critical(this,
+                              tr("Fehler beim Öffnen einer temporären Datei"),
+                              tr("Fehler: Die temporäre Datei zum Zwischenspeichern des TeX-Codes"\
+                                 " konnte nicht geöffnet werden.")
+                              );
+        return;
+    }
+    tmpFile.close();
 
-	// HTTP-Header bauen
-	QHttpRequestHeader header("POST", "/service.php");
-	header.setContentType("application/x-www-form-urlencoded");
-	header.setContentLength(postData.length());
-	header.setValue("Host", "phototex.creations.de");
+    QSettings settings;
 
-	// HTTP-Request abschicken
-	httpRequestId = http->request(header, postData, httpBuffer);
+    QProcess xetexProcess(this);
+    QStringList xetexArguments;
+
+    xetexArguments << "-interaction=nonstopmode"
+                   << QString("-output-directory=%1").arg(temporaryDir.absolutePath())
+                   << tmpFile.fileName();
+
+    qDebug() << xetexArguments;
+
+    xetexProcess.setWorkingDirectory(temporaryDir.absolutePath());
+    xetexProcess.start(settings.value("xetex_path").toString(), xetexArguments);
+    xetexProcess.waitForFinished();
+
+    QFile outputFile(outputFilename);
+    outputFile.open(QIODevice::WriteOnly);
+    outputFile.write(xetexProcess.readAll());
+    outputFile.close();
+
+    outputFile.open(QIODevice::ReadOnly);
+    qDebug() << outputFile.readAll();
+    outputFile.close();
+
     done(Accepted);
 }
 
@@ -258,7 +284,7 @@ void PdfExportDialog::enableAllWidgets(bool toggle)
 	browseButton->setEnabled(toggle);
 	traineeName->setEnabled(toggle);
 	instructorName->setEnabled(toggle);
-	companyName->setEnabled(toggle);
+    companyName->setEnabled(toggle);
 	dateEdit->setEnabled(toggle);
 
     QList<QAbstractButton*> buttons = buttonBox->buttons();
