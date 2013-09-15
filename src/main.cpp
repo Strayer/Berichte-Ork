@@ -19,8 +19,7 @@
  * Authors: Sven Grunewaldt <strayer@olle-orks.org>
  */
 
-#include <QApplication>
-#include <QIcon>
+#include <QtCore>
 
 #include "berichteork.h"
 

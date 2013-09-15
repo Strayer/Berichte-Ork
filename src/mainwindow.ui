@@ -261,9 +261,6 @@ p, li { white-space: pre-wrap; }
    </property>
   </action>
   <action name="actionSettings">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
    <property name="text">
     <string>&amp;Einstellungen</string>
    </property>

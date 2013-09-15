@@ -26,11 +26,13 @@
 #include <QtGui>
 #include <QtDebug>
 
-SettingsDialog::SettingsDialog(QWidget *parent) :
+SettingsDialog::SettingsDialog(QWidget *parent, DataHandler *dataHandler) :
     QDialog(parent),
     ui(new Ui::SettingsDialog)
 {
     ui->setupUi(this);
+
+    this->dataHandler = dataHandler;
 
     xetex_path_valid = false;
 
@@ -68,11 +70,25 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
         }
     }
 
-    connect(ui->xetexPathLineEdit, SIGNAL(textChanged(QString)),
+    connect(ui->xetexPath, SIGNAL(textChanged(QString)),
             this, SLOT(validateXetexPath()));
 
     if (!xetex_path.isNull())
-        ui->xetexPathLineEdit->setText(xetex_path);
+        ui->xetexPath->setText(xetex_path);
+
+    int reportTabIndex = ui->tabWidget->indexOf(ui->reportSettingsTab);
+    if (dataHandler->isDatabaseOpen())
+    {
+        ui->traineeName->setText(dataHandler->traineeName());
+        ui->instructorName->setText(dataHandler->instructorName());
+        ui->companyName->setText(dataHandler->companyName());
+        ui->texTemplatePath->setText(dataHandler->getTexTemplatePath());
+        ui->tabWidget->setTabEnabled(reportTabIndex, true);
+    }
+    else
+    {
+        ui->tabWidget->setTabEnabled(reportTabIndex, false);
+    }
 }
 
 SettingsDialog::~SettingsDialog()
@@ -80,9 +96,14 @@ SettingsDialog::~SettingsDialog()
     delete ui;
 }
 
+void SettingsDialog::on_browseButton_clicked()
+{
+    ui->texTemplatePath->setText(QFileDialog::getOpenFileName(this, NULL, NULL, "TeX-Template (*.tex)"));
+}
+
 void SettingsDialog::validateXetexPath()
 {
-    if (ui->xetexPathLineEdit->text().isEmpty())
+    if (ui->xetexPath->text().isEmpty())
     {
         ui->validationLabel->setText(tr("Bitten geben Sie den Pfad zum XeTeX-Programm an"));
         ui->validationLabel->setStyleSheet("QLabel {color: black;}");
@@ -91,7 +112,7 @@ void SettingsDialog::validateXetexPath()
     }
     else
     {
-        QString xetex_path = ui->xetexPathLineEdit->text();
+        QString xetex_path = ui->xetexPath->text();
 
         if (!QFile::exists(xetex_path))
         {
@@ -152,7 +173,15 @@ void SettingsDialog::accept()
 
     QSettings settings;
 
-    settings.setValue("xetex_path", ui->xetexPathLineEdit->text());
+    settings.setValue("xetex_path", ui->xetexPath->text());
+
+    if (dataHandler->isDatabaseOpen())
+    {
+        dataHandler->setTraineeName(ui->traineeName->text());
+        dataHandler->setInstructorName(ui->instructorName->text());
+        dataHandler->setCompanyName(ui->companyName->text());
+        dataHandler->setTexTemplatePath(ui->texTemplatePath->text());
+    }
 
     done(Accepted);
 }

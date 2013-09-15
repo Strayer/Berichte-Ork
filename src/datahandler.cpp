@@ -21,10 +21,15 @@
 
 #include "datahandler.h"
 
-#include <QString>
-#include <QMessageBox>
+#include <QtGui>
 #include <QtSql>
-#include <QDate>
+
+const char* DataHandler::SettingTraineeName = "traineeName";
+const char* DataHandler::SettingInstructorName = "instructorName";
+const char* DataHandler::SettingCompanyName = "companyName";
+const char* DataHandler::SettingTexTemplate = "TeXTemplate";
+const char* DataHandler::SettingStartDate = "startDate";
+const char* DataHandler::SettingEndDate = "endDate";
 
 DataHandler::DataHandler()
 {
@@ -103,54 +108,96 @@ bool DataHandler::isDatabaseOpen() const
     return databaseOpen;
 }
 
-QDate DataHandler::getStartDate()
+QVariant DataHandler::settingValue(QString key)
 {
     QSqlQuery query;
-    query.exec("SELECT value FROM settings WHERE key = 'startDate'");
-    query.next();
+    query.prepare("SELECT value FROM settings WHERE key = :settingKey");
+    query.bindValue(":settingKey", key);
+    query.exec();
 
-    int year = query.value(0).toString().left(4).toInt();
-	int month = query.value(0).toString().mid(4, 2).toInt();
-	int day = query.value(0).toString().right(2).toInt();
+    if (!query.next())
+        return QVariant();
+    else
+        return query.value(0);
+}
+
+void DataHandler::setSettingValue(QString key, QVariant value)
+{
+    QSqlQuery query;
+    query.prepare("SELECT COUNT(*) FROM settings WHERE key = :settingKey");
+    query.bindValue(":settingKey", key);
+    query.exec();
+
+    if (query.next() && query.value(0).toInt() > 0)
+        query.prepare("UPDATE settings SET value = :path WHERE key = :settingKey");
+    else
+        query.prepare("INSERT INTO settings(key, value) VALUES (:settingKey, :settingValue)");
+
+    query.bindValue(":settingKey", key);
+    query.bindValue(":settingValue", value);
+    query.exec();
+}
+
+QDate DataHandler::getStartDate()
+{
+    QString startDate = settingValue("startDate").toString();
+
+    int year = startDate.left(4).toInt();
+    int month = startDate.mid(4, 2).toInt();
+    int day = startDate.right(2).toInt();
 
 	return QDate(year, month, day);
 }
 
 QDate DataHandler::getEndDate()
 {
-	QSqlQuery query;
-	query.exec("SELECT value FROM settings WHERE key = 'endDate'");
-	query.next();
+    QString endDate = settingValue("endDate").toString();
 
-	int year = query.value(0).toString().left(4).toInt();
-	int month = query.value(0).toString().mid(4, 2).toInt();
-	int day = query.value(0).toString().right(2).toInt();
+    int year = endDate.left(4).toInt();
+    int month = endDate.mid(4, 2).toInt();
+    int day = endDate.right(2).toInt();
 
     return QDate(year, month, day);
 }
 
-QString DataHandler::getTeXTemplatePath()
+QString DataHandler::getTexTemplatePath()
 {
-    QSqlQuery query;
-    query.exec("SELECT value FROM settings WHERE key = 'TeXTemplate'");
-    if (query.next())
-        return query.value(0).toString();
-    else
-        return QString();
+    return settingValue(SettingTexTemplate).toString();
 }
 
-void DataHandler::setTeXTemplatePath(QString TeXTemplatePath)
+void DataHandler::setTexTemplatePath(QString TeXTemplatePath)
 {
-    QSqlQuery query;
-    query.exec("SELECT COUNT(*) FROM settings WHERE key = 'TeXTemplate'");
+    setSettingValue(SettingTexTemplate, TeXTemplatePath);
+}
 
-    if (query.next() && query.value(0).toInt() > 0)
-        query.prepare("UPDATE settings SET value = :path WHERE key = 'TeXTemplate'");
-    else
-        query.prepare("INSERT INTO settings(key, value) VALUES ('TeXTemplate', :path)");
+QString DataHandler::traineeName()
+{
+    return settingValue(SettingTraineeName).toString();
+}
 
-    query.bindValue(":path", TeXTemplatePath);
-    query.exec();
+void DataHandler::setTraineeName(QString traineeName)
+{
+    setSettingValue(SettingTraineeName, traineeName);
+}
+
+QString DataHandler::instructorName()
+{
+    return settingValue(SettingInstructorName).toString();
+}
+
+void DataHandler::setInstructorName(QString instructorName)
+{
+    setSettingValue(SettingInstructorName, instructorName);
+}
+
+QString DataHandler::companyName()
+{
+    return settingValue(SettingCompanyName).toString();
+}
+
+void DataHandler::setCompanyName(QString companyName)
+{
+    setSettingValue(SettingCompanyName, companyName);
 }
 
 bool DataHandler::openNewDatabase(QString file, QDate startDate, QDate endDate)
@@ -173,15 +220,8 @@ bool DataHandler::openNewDatabase(QString file, QDate startDate, QDate endDate)
 	query.exec("CREATE TABLE 'settings' ('key' CHAR PRIMARY KEY  NOT NULL , 'value' CHAR NOT NULL )");
 
 	// Ausbildungsbeginn und -ende eintragen
-	query.prepare("INSERT INTO settings VALUES(:key, :date)");
-	query.bindValue(":date", startDate.toString("yyyyMMdd"));
-	query.bindValue(":key", "startDate");
-	query.exec();
-
-	query.prepare("INSERT INTO settings VALUES(:key, :date)");
-	query.bindValue(":date", endDate.toString("yyyyMMdd"));
-	query.bindValue(":key", "endDate");
-	query.exec();
+    setSettingValue(SettingStartDate, startDate.toString("yyyyMMdd"));
+    setSettingValue(SettingEndDate, endDate.toString("yyyyMMdd"));
 
 	return true;
 }

@@ -20,16 +20,7 @@
  */
 
 #include "pdfexportdialog.h"
-#include <QFileDialog>
-#include <QDate>
-#include <QFile>
-#include <QMessageBox>
-#include <QByteArray>
-#include <QHttpRequestHeader>
-#include <QDomDocument>
-#include <QDomNode>
-#include <QDomElement>
-#include <QtSql>
+#include <QtGui>
 
 
 void escapeForTeX(QString &str)
@@ -62,15 +53,6 @@ PdfExportDialog::PdfExportDialog(QWidget *parent, DataHandler *dataHandler) : QD
 	connect(loadingMovieGif, SIGNAL(stateChanged(QMovie::MovieState)),
 		this, SLOT(updateGeneratePdfIcon()));
 
-	connect(texPath, SIGNAL(textChanged(QString)),
-		this, SLOT(formFieldChanged()));
-	connect(traineeName, SIGNAL(textChanged(QString)),
-		this, SLOT(formFieldChanged()));
-	connect(instructorName, SIGNAL(textChanged(QString)),
-		this, SLOT(formFieldChanged()));
-	connect(companyName, SIGNAL(textChanged(QString)),
-		this, SLOT(formFieldChanged()));
-
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("PDF generieren"));
 }
 
@@ -86,13 +68,13 @@ void PdfExportDialog::accept()
         tr("Portable Document Format (*.pdf)"));
 
 	// Template öffnen
-	QFile texTemplateFile(texPath->text());
+    QFile texTemplateFile(dataHandler->getTexTemplatePath());
 
 	if (!texTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
 	{
 		loadingPDF = false;
         QMessageBox::critical(this, tr("Fehler beim Öffnen des TeX-Templates!"),
-            tr("Das TeX-Template %1 konnte nicht geöffnet werden!").arg(texPath->text()));
+            tr("Das TeX-Template %1 konnte nicht geöffnet werden!").arg(dataHandler->getTexTemplatePath()));
 		close();
 		return;
 	}
@@ -102,10 +84,10 @@ void PdfExportDialog::accept()
 	texTemplateFile.close();
 
 	// Simple Daten ins Template setzen
-	texTemplate.replace(QString("___trainee___"), traineeName->text().toAscii());
-	texTemplate.replace(QString("___instructor___"), instructorName->text().toAscii());
-	texTemplate.replace(QString("___company___"), companyName->text().toAscii());
-	texTemplate.replace(QString("___signdate___"), dateEdit->date().toString("dd.MM.yyyy").toAscii());
+    texTemplate.replace(QString("___trainee___"), dataHandler->traineeName().toUtf8());
+    texTemplate.replace(QString("___instructor___"), dataHandler->instructorName().toUtf8());
+    texTemplate.replace(QString("___company___"), dataHandler->companyName().toUtf8());
+    texTemplate.replace(QString("___signdate___"), dateEdit->date().toString("dd.MM.yyyy").toUtf8());
 
 	//
 	// Kalenderwochen aus der DB laden
@@ -262,29 +244,8 @@ void PdfExportDialog::accept()
     done(Accepted);
 }
 
-void PdfExportDialog::on_browseButton_clicked()
-{
-	texPath->setText(QFileDialog::getOpenFileName(this, NULL, NULL, "TEX-Template (*.tex)"));
-}
-
-void PdfExportDialog::formFieldChanged()
-{
-	if (!texPath->text().isEmpty() &&
-		!traineeName->text().isEmpty() &&
-		!instructorName->text().isEmpty() &&
-		!companyName->text().isEmpty())
-        buttonBox->button(QDialogButtonBox::Ok)->setEnabled(true);
-	else
-        buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
-}
-
 void PdfExportDialog::enableAllWidgets(bool toggle)
 {
-	texPath->setEnabled(toggle);
-	browseButton->setEnabled(toggle);
-	traineeName->setEnabled(toggle);
-	instructorName->setEnabled(toggle);
-    companyName->setEnabled(toggle);
 	dateEdit->setEnabled(toggle);
 
     QList<QAbstractButton*> buttons = buttonBox->buttons();
@@ -314,77 +275,4 @@ void PdfExportDialog::updateGeneratePdfIcon()
         buttonBox->button(QDialogButtonBox::Ok)->setIcon(QIcon(loadingMovieGif->currentPixmap()));
 	else
         buttonBox->button(QDialogButtonBox::Ok)->setIcon(QIcon(":/images/images/arrow-right.png"));
-}
-
-void PdfExportDialog::httpRequestFinished(int id, bool error)
-{
-	if (httpRequestId != id)
-		return;
-
-	loadingPDF = false;
-
-	if (error)
-	{
-		QMessageBox::critical(this, "Fehler beim generieren der PDF-Datei!",
-			tr("Beim Generieren der PDF-Datei ist ein Fehler aufgetreten:<br />%1").arg(http->errorString()));
-		close();
-		return;
-	}
-
-	// DOM Dokument erstellen
-	QDomDocument xml;
-	xml.setContent(httpBuffer->data());
-
-	// Root-Klasse holen
-	QDomElement xmlRoot = xml.documentElement();
-
-	// Einzelne Felder rausholen
-	QByteArray pdf;
-	QString output;
-	bool texError;
-
-	QDomNode currNode = xmlRoot.firstChild();
-	while(!currNode.isNull()) {
-		QDomElement currElement = currNode.toElement();
-		if(!currElement.isNull()) {
-			if (currElement.tagName() == "error")
-				texError = (currElement.text() == "1" ? true : false);
-			else if (currElement.tagName() == "output")
-				output = currElement.text();
-			else if (currElement.tagName() == "pdf")
-				pdf = QByteArray::fromBase64(currElement.text().toAscii());
-		}
-		currNode = currNode.nextSibling();
-	}
-
-	if (texError)
-	{
-		QMessageBox::critical(this, "Fehler beim Generieren der PDF-Datei!",
-			tr("Beim Generieren der PDF-Datei ist ein Fehler aufgetreten!<br /><br />Ausgabe von PhotoTex:<br />%1")
-			.arg(output));
-		close();
-		return;
-	}
-
-	QFile pdfOutFile(QFileDialog::getSaveFileName(this, NULL, NULL, "PDF-Datei (*.pdf)"));
-
-	if (!pdfOutFile.open(QIODevice::WriteOnly))
-	{
-		QMessageBox::critical(this, "Fehler beim Speichern der PDF-Datei!",
-			tr("Beim Speichern der PDF-Datei %1 ist ein Fehler aufgetreten!").arg(pdfOutFile.fileName()));
-		close();
-		return;
-	}
-
-	pdfOutFile.write(pdf);
-	pdfOutFile.close();
-
-	/*
-	if (QMessageBox::question(this, "PDF erfolgreich generiert!",
-		tr("Die PDF-Datei %1 wurde erfolgreich generiert!<br /><br />Soll die Datei jetzt geöffnet werden?").arg(pdfOutFile.fileName()),
-		QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::Yes)
-		QMessageBox::information(this, "Kay", "Kay");
-	*/
-
-	close();
 }

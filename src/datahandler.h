@@ -37,8 +37,14 @@ public:
 	void closeDatabase();
 	QDate getStartDate();
 	QDate getEndDate();
-    QString getTeXTemplatePath();
-    void setTeXTemplatePath(QString TeXTemplatePath);
+    QString getTexTemplatePath();
+    void setTexTemplatePath(QString TeXTemplatePath);
+    QString traineeName();
+    void setTraineeName(QString traineeName);
+    QString instructorName();
+    void setInstructorName(QString instructorName);
+    QString companyName();
+    void setCompanyName(QString companyName);
 	unsigned int weekCompanyEntryCount(int year, int week);
 	unsigned int weekSchoolEntryCount(int year, int week);
 
@@ -55,6 +61,16 @@ public:
 
 private:
     bool databaseOpen;
+
+    static const char* SettingTraineeName;
+    static const char* SettingInstructorName;
+    static const char* SettingCompanyName;
+    static const char* SettingTexTemplate;
+    static const char* SettingStartDate;
+    static const char* SettingEndDate;
+
+    QVariant settingValue(QString key);
+    void setSettingValue(QString key, QVariant value);
 };
 
 #endif

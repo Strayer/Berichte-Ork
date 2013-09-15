@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>431</width>
-    <height>233</height>
+    <height>92</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -28,59 +28,7 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="texPath"/>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Auszubildender:</string>
-       </property>
-       <property name="buddy">
-        <cstring>traineeName</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1" colspan="2">
-      <widget class="QLineEdit" name="traineeName"/>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>Ausbilder:</string>
-       </property>
-       <property name="buddy">
-        <cstring>instructorName</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1" colspan="2">
-      <widget class="QLineEdit" name="instructorName"/>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="label_5">
-       <property name="text">
-        <string>Name der Firma:</string>
-       </property>
-       <property name="buddy">
-        <cstring>companyName</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1" colspan="2">
-      <widget class="QLineEdit" name="companyName"/>
-     </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>Datum der Unterschriften:</string>
-       </property>
-       <property name="buddy">
-        <cstring>dateEdit</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="1" colspan="2">
+     <item row="0" column="1" colspan="2">
       <widget class="QDateEdit" name="dateEdit">
        <property name="displayFormat">
         <string>dd.MM.yyyy</string>
@@ -90,24 +38,13 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="2">
-      <widget class="QPushButton" name="browseButton">
-       <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset resource="resources.qrc">
-         <normaloff>:/images/images/document-open.png</normaloff>:/images/images/document-open.png</iconset>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="0">
-      <widget class="QLabel" name="label_4">
+      <widget class="QLabel" name="label_3">
        <property name="text">
-        <string>Pfad zum TEX-Template:</string>
+        <string>Datum der Unterschriften:</string>
        </property>
        <property name="buddy">
-        <cstring>texPath</cstring>
+        <cstring>dateEdit</cstring>
        </property>
       </widget>
      </item>
@@ -123,16 +60,9 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>texPath</tabstop>
-  <tabstop>browseButton</tabstop>
-  <tabstop>traineeName</tabstop>
-  <tabstop>instructorName</tabstop>
-  <tabstop>companyName</tabstop>
   <tabstop>dateEdit</tabstop>
  </tabstops>
- <resources>
-  <include location="resources.qrc"/>
- </resources>
+ <resources/>
  <connections>
   <connection>
    <sender>buttonBox</sender>

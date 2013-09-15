@@ -390,7 +390,6 @@ void BerichteOrk::initializeGui()
 	initializeModels();
     initializeViews();
 
-    actionSettings->setEnabled(dataHandler.isDatabaseOpen());
     actionGeneratePDF->setEnabled(dataHandler.isDatabaseOpen());
 
 	// Datum suchen erlauben
@@ -508,7 +507,7 @@ void BerichteOrk::on_actionGeneratePDF_triggered()
 
 void BerichteOrk::on_actionSettings_triggered()
 {
-    SettingsDialog *dialog = new SettingsDialog(this);
+    SettingsDialog *dialog = new SettingsDialog(this, &dataHandler);
 
     dialog->exec();
 }

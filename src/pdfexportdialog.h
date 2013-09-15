@@ -42,8 +42,7 @@ private:
 	void enableAllWidgets(bool toggle);
 	void toggleLoadingGif(bool toggle);
 	bool loadingPDF;
-	QMovie *loadingMovieGif;
-	QBuffer *httpBuffer;
+    QMovie *loadingMovieGif;
 	QHttp *http;
 	int httpRequestId;
 	DataHandler *dataHandler;
@@ -52,10 +51,7 @@ public slots:
     void accept();
 
 private slots:
-    void on_browseButton_clicked();
-	void formFieldChanged();
-	void updateGeneratePdfIcon();
-	void httpRequestFinished(int id, bool error);
+    void updateGeneratePdfIcon();
 
 protected:
 	void closeEvent(QCloseEvent *event);

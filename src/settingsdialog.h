@@ -23,6 +23,7 @@
 #define SETTINGSDIALOG_H
 
 #include <QDialog>
+#include "datahandler.h"
 
 namespace Ui {
 class SettingsDialog;
@@ -33,15 +34,17 @@ class SettingsDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit SettingsDialog(QWidget *parent = 0);
+    explicit SettingsDialog(QWidget *parent = 0, DataHandler *dataHandler = 0);
     ~SettingsDialog();
 
 private:
     Ui::SettingsDialog *ui;
 
+    DataHandler* dataHandler;
     bool xetex_path_valid;
 
 protected slots:
+    void on_browseButton_clicked();
     void validateXetexPath();
 
 public slots:
