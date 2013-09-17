@@ -13,9 +13,9 @@
 % You should have received a copy of the GNU General Public License
 % along with Berichte-Ork.  If not, see <http://www.gnu.org/licenses/>.
 %
-% Copyright (C) AndrÈ H‰nsel, 2009
+% Copyright (C) Andr√© H√§nsel, 2009
 %
-% Authors: AndrÈ H‰nsel <haensel@creations.de>
+% Authors: Andr√© H√§nsel <haensel@creations.de>
 %          Sven Grunewaldt <strayer@olle-orks.org>
 
 % \batchmode
@@ -23,10 +23,8 @@
 \hoffset=-0.5in
 \voffset=-1in
 
-\font\standard="Arial" at 10pt
-\font\standardSmall="Arial" at 8pt
-\font\sykl="Wingdings 3" at 11pt
-\font\sygr="Wingdings 3" at 13pt
+\font\standard="Arial Unicode MS" at 10pt
+\font\standardSmall="Arial Unicode MS" at 8pt
 
 
 \vsize = 220mm
@@ -41,14 +39,14 @@
 	\vss}\hss%
 }}
 
-\def\item #1\par{\setbox1=\hbox{\sykl\char182\hskip3dd}\setbox2=\hbox{\hskip\wd1\sygr\char234\hskip3dd}
+\def\item #1\par{\setbox1=\hbox{‚û®\hskip3dd}\setbox2=\hbox{\hskip\wd1‚Ä£\hskip3dd}
 	\hangindent=\wd2\hangafter=1\leavevmode\box2 #1 \par}
 
-\def\subCat #1\par{\setbox1=\hbox{\sykl\char182\hskip3dd}
+\def\subCat #1\par{\setbox1=\hbox{‚û®\hskip3dd}
 	\hangindent=\wd1\hangafter=1\leavevmode\box1 #1 \par}
 
 \def\kiste #1#2 {%
-	\vbox{\hrule\hbox{\hbox to 0pt{\setbox1=\vbox{\vskip3pt#1\vskip3pt}\dimen1=\hsize\advance\dimen1 by 6pt\special{.9 setgray}\vrule width\dimen1 height\ht1\special{0 setgray}\hss}\vrule\kern3pt\vbox{\vskip3pt#1\vskip3pt}\kern3pt\vrule}\hrule\hbox{\vrule\kern3pt\vbox{\kern3pt#2\kern3pt}\kern3pt\vrule}\hrule\vskip.5cm}
+	\vbox{\hrule\hbox{\hbox to 0pt{\setbox1=\vbox{\vskip3pt#1\vskip3pt}\dimen1=\hsize\advance\dimen1 by 6pt\special{pdf:bcolor .9}\vrule width\dimen1 height\ht1\special{pdf:ecolor}\hss}\vrule\kern3pt\vbox{\vskip3pt#1\vskip3pt}\kern3pt\vrule}\hrule\hbox{\vrule\kern3pt\vbox{\kern3pt#2\kern3pt}\kern3pt\vrule}\hrule\vskip.5cm}
 }
 
 \def\wochentrenner #1#2 {{    % Das zweite Paar Klammern macht die Boxen lokal
@@ -56,8 +54,8 @@
 	\dimen2 = 5pt                 % Abstand zwischen Linie und Inhalt
 	\setbox1=\hbox{Jahr #1 \raise3.1pt\hbox{\vrule width10pt height.4pt} Kalenderwoche #2}
 	\dimen1=\hsize
-	\advance\dimen1 by 6pt        % Gleicht die zus‰tzliche Breite aus, die die Kisten durch die Abst‰nde bekommen
-	\advance\dimen1 by 0.8pt      % Gleicht die zus‰tzliche Breite aus, die die Kisten durch die Liniendicken bekommen
+	\advance\dimen1 by 6pt        % Gleicht die zus√§tzliche Breite aus, die die Kisten durch die Abst√§nde bekommen
+	\advance\dimen1 by 0.8pt      % Gleicht die zus√§tzliche Breite aus, die die Kisten durch die Liniendicken bekommen
 	\advance\dimen1 by -\wd1
 	\dimen1 = .5\dimen1
 	\advance\dimen1 by -\dimen2
