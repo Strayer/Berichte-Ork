@@ -23,10 +23,8 @@
 \hoffset=-0.5in
 \voffset=-1in
 
-\font\standard="Arial" at 10pt
-\font\standardSmall="Arial" at 8pt
-\font\sykl="Wingdings 3" at 11pt
-\font\sygr="Wingdings 3" at 13pt
+\font\standard="Arial Unicode MS" at 10pt
+\font\standardSmall="Arial Unicode MS" at 8pt
 
 
 \vsize = 220mm
@@ -41,10 +39,10 @@
 	\vss}\hss%
 }}
 
-\def\item #1\par{\setbox1=\hbox{\sykl\char182\hskip3dd}\setbox2=\hbox{\hskip\wd1\sygr\char234\hskip3dd}
+\def\item #1\par{\setbox1=\hbox{➨\hskip3dd}\setbox2=\hbox{\hskip\wd1‣\hskip3dd}
 	\hangindent=\wd2\hangafter=1\leavevmode\box2 #1 \par}
 
-\def\subCat #1\par{\setbox1=\hbox{\sykl\char182\hskip3dd}
+\def\subCat #1\par{\setbox1=\hbox{➨\hskip3dd}
 	\hangindent=\wd1\hangafter=1\leavevmode\box1 #1 \par}
 
 \def\kiste #1#2 {%
