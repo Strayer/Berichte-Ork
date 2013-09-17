@@ -152,13 +152,13 @@ void PdfExportDialog::accept()
 					if (oldSubject != subject)
 					{
                         escapeForTeX(subject);
-						generatedContent.append(QString("\\subCat %1\n\n").arg(subject));
+                        generatedContent.append(QString("\\subCat %1\n\n").arg(subject).toUtf8());
 						oldSubject = subject;
 					}
 
 					// Item einfügen
                     escapeForTeX(text);
-					generatedContent.append(QString("\\item %2\n\n").arg(text));
+                    generatedContent.append(QString("\\item %2\n\n").arg(text).toUtf8());
 				}
 				generatedContent.append("}\n\n");
 
@@ -175,13 +175,13 @@ void PdfExportDialog::accept()
 					if (oldSubject != subject)
 					{
                         escapeForTeX(subject);
-						generatedContent.append(QString("\\subCat %1\n\n").arg(subject));
+                        generatedContent.append(QString("\\subCat %1\n\n").arg(subject).toUtf8());
 						oldSubject = subject;
 					}
 
 					// Item einfügen
                     escapeForTeX(text);
-					generatedContent.append(QString("\\item %2\n\n").arg(text));
+                    generatedContent.append(QString("\\item %2\n\n").arg(text).toUtf8());
 				}
 				generatedContent.append("}\n\n\n");
 
