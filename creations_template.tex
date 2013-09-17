@@ -48,7 +48,7 @@
 	\hangindent=\wd1\hangafter=1\leavevmode\box1 #1 \par}
 
 \def\kiste #1#2 {%
-	\vbox{\hrule\hbox{\hbox to 0pt{\setbox1=\vbox{\vskip3pt#1\vskip3pt}\dimen1=\hsize\advance\dimen1 by 6pt\special{.9 setgray}\vrule width\dimen1 height\ht1\special{0 setgray}\hss}\vrule\kern3pt\vbox{\vskip3pt#1\vskip3pt}\kern3pt\vrule}\hrule\hbox{\vrule\kern3pt\vbox{\kern3pt#2\kern3pt}\kern3pt\vrule}\hrule\vskip.5cm}
+	\vbox{\hrule\hbox{\hbox to 0pt{\setbox1=\vbox{\vskip3pt#1\vskip3pt}\dimen1=\hsize\advance\dimen1 by 6pt\special{pdf:bcolor .9}\vrule width\dimen1 height\ht1\special{pdf:ecolor}\hss}\vrule\kern3pt\vbox{\vskip3pt#1\vskip3pt}\kern3pt\vrule}\hrule\hbox{\vrule\kern3pt\vbox{\kern3pt#2\kern3pt}\kern3pt\vrule}\hrule\vskip.5cm}
 }
 
 \def\wochentrenner #1#2 {{    % Das zweite Paar Klammern macht die Boxen lokal
